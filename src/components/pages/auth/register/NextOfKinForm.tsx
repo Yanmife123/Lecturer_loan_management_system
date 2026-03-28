@@ -58,7 +58,7 @@ export function NextOfKinForm({ onNext, onBack, isPending }: Props) {
         label="Email Address"
         inputname="nokEmail"
         register={register}
-        error={errors.noKinEmail?.message}
+        error={errors.nokEmail?.message}
       />
 
       <div className="flex gap-3 pt-2">
