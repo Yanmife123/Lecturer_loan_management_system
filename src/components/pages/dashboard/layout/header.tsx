@@ -37,7 +37,7 @@ function HeaderCollapseButton() {
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-40 w-full bg-card border-b border-border">
+    <header className="sticky top-0 z-40 w-full bg-card border-b border-[#1B2E5E1A]">
       <div className="flex items-center justify-between px-6 py-6 gap-4">
         {/* Left side - Sidebar trigger and title */}
         <div className="flex items-center gap-4 flex-1">
@@ -47,8 +47,8 @@ export function Header() {
           {/* Desktop Collapse Toggle Button */}
           <HeaderCollapseButton />
 
-          <h1 className="text-xl font-semibold text-foreground">
-            Welcome Back
+          <h1 className="text-2xl font-medium leading-8 text-primaryT font-sans">
+            Dashboard
           </h1>
         </div>
 
@@ -63,7 +63,14 @@ export function Header() {
             <Bell className="w-5 h-5" />
             <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
           </Button>
-
+          <div className="space-y-1 max-md:hidden">
+            <div className="text-primaryT text-sm leading-5 font-sans">
+              Dr. Adeyemi Johnson
+            </div>
+            <div className="text-[#64748B] font-sans text-xs leading-4">
+              Staff ID: RUN/2024/001
+            </div>
+          </div>
           {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

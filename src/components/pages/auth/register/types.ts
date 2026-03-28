@@ -1,4 +1,4 @@
-import * as z from "zod";
+import z from "zod";
 
 const MAX_FILE_SIZE = 2048 * 1024; // 2MB in bytes
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png"];
