@@ -2,8 +2,11 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
+
 import { CustomInput } from "@/components/utility/form/custom-input";
 import { step2Schema, Step2FormData } from "./types";
+import { SelectInput } from "@/components/utility/form/custom-select";
+import { FileInput } from "@/components/utility/form/custom-file";
 
 type Props = {
   onNext: (data: Step2FormData) => void;
@@ -14,6 +17,7 @@ type Props = {
 export function PersonalInfoForm({ onNext, onBack, email }: Props) {
   const {
     handleSubmit,
+    control,
     register,
     formState: { errors },
   } = useForm<Step2FormData>({
@@ -23,7 +27,7 @@ export function PersonalInfoForm({ onNext, onBack, email }: Props) {
   return (
     <form onSubmit={handleSubmit(onNext)} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
-        <CustomInput
+        {/* <CustomInput
           label="Surname"
           inputname="surname"
           register={register}
@@ -36,12 +40,15 @@ export function PersonalInfoForm({ onNext, onBack, email }: Props) {
           register={register}
           type="text"
           error={errors.otherNames?.message}
-        />
-        <CustomInput
+        /> */}
+        <SelectInput
           label="Gender"
           inputname="gender"
-          register={register}
-          type="text"
+          control={control}
+          options={[
+            { label: "Male", value: "male" },
+            { label: "Female", value: "female" },
+          ]}
           error={errors.gender?.message}
         />
         <CustomInput
@@ -51,11 +58,16 @@ export function PersonalInfoForm({ onNext, onBack, email }: Props) {
           type="date"
           error={errors.dateOfBirth?.message}
         />
-        <CustomInput
+        <SelectInput
           label="Marital Status"
           inputname="maritalStatus"
-          register={register}
-          type="text"
+          control={control}
+          options={[
+            { label: "Single", value: "single" },
+            { label: "Married", value: "married" },
+            { label: "Divorced", value: "divorced" },
+            { label: "Widowed", value: "widowed" },
+          ]}
           error={errors.maritalStatus?.message}
         />
         <CustomInput
@@ -67,10 +79,10 @@ export function PersonalInfoForm({ onNext, onBack, email }: Props) {
         />
         <CustomInput
           label="Department/Unit"
-          inputname="departmentUnit"
+          inputname="department"
           register={register}
           type="text"
-          error={errors.departmentUnit?.message}
+          error={errors.department?.message}
         />
         <CustomInput
           label="Date of First Appointment"
@@ -81,32 +93,31 @@ export function PersonalInfoForm({ onNext, onBack, email }: Props) {
         />
         <CustomInput
           label="Present Designation"
-          inputname="presentDesignation"
+          inputname="designation"
           register={register}
           type="text"
-          error={errors.presentDesignation?.message}
+          error={errors.designation?.message}
         />
         <CustomInput
-          label="Salary Scale"
-          inputname="salaryScale"
+          label="Salary Scale Level"
+          inputname="salaryScaleLevel"
           register={register}
           type="text"
-          error={errors.salaryScale?.message}
+          error={errors.salaryScaleLevel?.message}
+        />
+        <CustomInput
+          label="Salary Scale Step"
+          inputname="salaryScaleStep"
+          register={register}
+          type="text"
+          error={errors.salaryScaleStep?.message}
         />
         <CustomInput
           label="Staff File No"
-          inputname="staffFileNo"
+          inputname="file_no"
           register={register}
           type="text"
-          error={errors.staffFileNo?.message}
-        />
-        <CustomInput
-          label="Telephone No"
-          inputname="telephoneNo"
-          register={register}
-          type="tel"
-          placeholder="+234 800 000 0000"
-          error={errors.telephoneNo?.message}
+          error={errors.file_no?.message}
         />
       </div>
 
@@ -119,10 +130,10 @@ export function PersonalInfoForm({ onNext, onBack, email }: Props) {
       />
       <CustomInput
         label="Permanent Home Address"
-        inputname="permanentHomeAddress"
+        inputname="permanentAddress"
         register={register}
         type="text"
-        error={errors.permanentHomeAddress?.message}
+        error={errors.permanentAddress?.message}
       />
 
       {/* Read-only email carried over from Step 1 */}
@@ -136,6 +147,12 @@ export function PersonalInfoForm({ onNext, onBack, email }: Props) {
           className="h-11 w-full rounded-md border border-input bg-muted px-3 text-sm text-muted-foreground cursor-not-allowed"
         />
       </div>
+      <FileInput
+        label="Signature"
+        inputname="signature"
+        register={register}
+        error={errors.signature?.message as string}
+      />
 
       <div className="flex gap-3 pt-2">
         <Button

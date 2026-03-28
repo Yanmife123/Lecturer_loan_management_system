@@ -29,33 +29,42 @@ export function AccountDetailsForm({ onNext }: Props) {
         placeholder="e.g., Dr., Prof., Mr., Mrs."
         error={errors.prefix?.message}
       />
+      {/* "oldUser" => 'required|boolean', */}
 
       <div className="grid grid-cols-2 gap-4">
         <CustomInput
-          label="First Name"
-          inputname="firstName"
+          label="SurName"
+          inputname="surname"
           register={register}
           type="text"
           placeholder="Enter your first name"
-          error={errors.firstName?.message}
+          error={errors.surname?.message}
         />
         <CustomInput
-          label="Last Name"
-          inputname="lastName"
+          label="Other Names"
+          inputname="otherNames"
           register={register}
           type="text"
           placeholder="Enter your last name"
-          error={errors.lastName?.message}
+          error={errors.otherNames?.message}
         />
       </div>
 
-      <CustomInput
+      {/* <CustomInput
         label="Staff ID"
         inputname="staffId"
         register={register}
         type="text"
         placeholder="e.g., RUN/2024/001"
         error={errors.staffId?.message}
+      /> */}
+      <CustomInput
+        label="Telephone No"
+        inputname="phone"
+        register={register}
+        type="tel"
+        placeholder="+234 800 000 0000"
+        error={errors.phone?.message}
       />
 
       <div>
@@ -66,12 +75,33 @@ export function AccountDetailsForm({ onNext }: Props) {
           placeholder="name@gmail.com"
           error={errors.email?.message}
         />
-        {!errors.email && (
+        {/* {!errors.email && (
           <p className="text-[#64748B] text-xs mt-1">
             Must be a Redeemer&apos;s University email
           </p>
-        )}
+        )} */}
       </div>
+      <CustomInput
+        label="Monthly Saving"
+        inputname="monthlySaving"
+        register={register}
+        type="number"
+        error={errors.monthlySaving?.message}
+      />
+      <CustomInput
+        label="Password"
+        inputname="password"
+        register={register}
+        type="password"
+        error={errors.password?.message}
+      />
+      <CustomInput
+        label="Confirm Password"
+        inputname="confirmPassword"
+        register={register}
+        type="password"
+        error={errors.confirmPassword?.message}
+      />
 
       <Button
         type="submit"

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { dataTagSymbol, useMutation } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
@@ -10,6 +10,7 @@ import { AccountDetailsForm } from "./AccountDetailsForm";
 import { PersonalInfoForm } from "./PersonalInfoForm";
 import { NextOfKinForm } from "./NextOfKinForm";
 import { EmailVerification } from "./EmailVerification";
+import { RegisterApi } from "@/lib/api/auth/auth";
 
 import {
   AllFormData,
@@ -42,16 +43,12 @@ export function RegisterForm() {
   const [formData, setFormData] = useState<AllFormData>({});
 
   const mutation = useMutation({
-    mutationFn: async (
-      data: Step1FormData & Step2FormData & Step3FormData
-    ) => {
-      const res = await fetch("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error("Registration failed");
-      return res.json();
+    mutationFn: (data: FormData) => RegisterApi(data),
+    onSuccess: (data) => {
+      console.log(data);
+    },
+    onError: (error) => {
+      console.error(error);
     },
   });
 
@@ -73,7 +70,22 @@ export function RegisterForm() {
 
     setFormData(fullData);
 
-    await mutation.mutateAsync(fullData);
+    // Build FormData instead of sending raw object
+    const form = new FormData();
+
+    Object.entries(fullData).forEach(([key, value]) => {
+      if (key === "signature") {
+        // Append the actual File from the FileList
+        const fileList = value as FileList;
+        if (fileList && fileList[0]) {
+          form.append("signature", fileList[0]);
+        }
+      } else {
+        form.append(key, value as string);
+      }
+    });
+
+    await mutation.mutateAsync(form); // 👈 send FormData, not fullData
     setStep(4);
   };
 

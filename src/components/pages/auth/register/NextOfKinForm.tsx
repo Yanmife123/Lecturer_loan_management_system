@@ -25,40 +25,40 @@ export function NextOfKinForm({ onNext, onBack, isPending }: Props) {
     <form onSubmit={handleSubmit(onNext)} className="space-y-4">
       <CustomInput
         label="Full Name of Next of Kin (Surname First)"
-        inputname="nextOfKinFullName"
+        inputname="nokFullName"
         register={register}
         type="text"
         placeholder="e.g., Adeyemi, Grace Oluwaseun"
-        error={errors.nextOfKinFullName?.message}
+        error={errors.nokFullName?.message}
       />
       <CustomInput
         label="Relationship"
-        inputname="nextOfKinRelationship"
+        inputname="nokRelationship"
         register={register}
         type="text"
         placeholder="e.g., Spouse, Sibling, Parent"
-        error={errors.nextOfKinRelationship?.message}
+        error={errors.nokRelationship?.message}
       />
       <CustomInput
         label="Contact Address"
-        inputname="nextOfKinContactAddress"
+        inputname="nokContactAddress"
         register={register}
         type="text"
-        error={errors.nextOfKinContactAddress?.message}
+        error={errors.nokContactAddress?.message}
       />
       <CustomInput
         label="Phone Number"
-        inputname="nextOfKinPhoneNumber"
+        inputname="nokPhone"
         register={register}
         type="tel"
         placeholder="+234 800 000 0000"
-        error={errors.nextOfKinPhoneNumber?.message}
+        error={errors.nokPhone?.message}
       />
       <EmailInput
         label="Email Address"
-        inputname="nextOfKinEmail"
+        inputname="nokEmail"
         register={register}
-        error={errors.nextOfKinEmail?.message}
+        error={errors.noKinEmail?.message}
       />
 
       <div className="flex gap-3 pt-2">
