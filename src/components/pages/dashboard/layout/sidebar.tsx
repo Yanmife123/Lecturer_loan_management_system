@@ -62,12 +62,16 @@ export function AppSidebar() {
         <SidebarMenu className="space-y-2  ">
           {navigationItems.map((item) => {
             const Icon = item.icon;
+            const IsPath =
+              item.href === "/dashboard"
+                ? Path === item.href
+                : Path.includes(item.href);
             return (
               <SidebarMenuItem key={item.href} className="">
                 <SidebarMenuButton
                   asChild
                   tooltip={item.label}
-                  className={` ${Path.includes(item.href) ? "bg-[#1B2E5E] text-white hover:text-white hover:bg-primaryT duration-300" : " text-primaryT bg-transparent hover:text-primaryT duration-300"}   px-4 py-4  rounded-[16px] h-10.75 `}
+                  className={` ${IsPath ? "bg-[#1B2E5E] text-white hover:text-white hover:bg-primaryT duration-300" : " text-primaryT bg-transparent hover:text-primaryT duration-300"}   px-4 py-4  rounded-[16px] h-10.75 `}
                 >
                   <Link href={item.href}>
                     <Icon className="w-5 h-5" />
