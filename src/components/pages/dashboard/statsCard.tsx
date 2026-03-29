@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { LucideIcon } from "lucide-react";
 
-type IconVariant = "default" | "blue" | "yellow" | "ghost";
+type IconVariant = "default" | "blue" | "yellow" | "green" | "ghost";
 
 interface StatCardProps {
   icon: LucideIcon;
@@ -32,6 +32,10 @@ const iconVariantStyles: Record<
   yellow: {
     wrapper: "bg-[#C89B2A1A] ",
     icon: "text-[#C89B2A]",
+  },
+  green: {
+    wrapper: "bg-[#10B9811A]",
+    icon: "text-[#10B981]",
   },
   ghost: {
     wrapper: "bg-transparent",
