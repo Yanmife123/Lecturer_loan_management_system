@@ -11,6 +11,7 @@ import {
   LayoutGrid,
   PiggyBank,
   History,
+  UserCheck,
 } from "lucide-react";
 import {
   Sidebar,
@@ -30,7 +31,12 @@ const navigationItems = [
   { label: "Apply for Loan", href: "/dashboard/loans", icon: FileText },
   { label: "Loan History", href: "/dashboard/loan-History", icon: History },
   { label: "My Profile", href: "/dashboard/profile", icon: User },
-  { label: "Settings", href: "/dashboard/settings", icon: Settings },
+  {
+    label: "Guarantors Request",
+    href: "/dashboard/guarantors-requests",
+    icon: UserCheck,
+  },
+  // { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
 export function AppSidebar() {
