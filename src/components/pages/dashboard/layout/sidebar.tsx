@@ -49,16 +49,14 @@ export function AppSidebar() {
       <SidebarHeader className="border-b border-[#1B2E5E1A] px-6 py-6">
         <Link href="/" className="flex items-center gap-2">
           <Image src={"/logo.svg"} alt="Logo icon" height={40} width={39} />
-          {state === "expanded" && (
-            <div className="">
-              <p className="text-primaryT font-sans text-sm leading-5">
-                Redeemer's University
-              </p>
-              <p className="text-[#64748B] text-xs font-normal font-sans">
-                Staff Portal
-              </p>
-            </div>
-          )}
+          <div className="">
+            <p className="text-primaryT font-sans text-sm leading-5">
+              Redeemer's University
+            </p>
+            <p className="text-[#64748B] text-xs font-normal font-sans">
+              Staff Portal
+            </p>
+          </div>
         </Link>
       </SidebarHeader>
 
