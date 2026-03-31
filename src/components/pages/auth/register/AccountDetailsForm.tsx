@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/utility/form/custom-input";
 import { EmailInput } from "@/components/utility/form/email-Input";
 import { step1Schema, Step1FormData } from "./types";
+import { SelectInput } from "@/components/utility/form/custom-select";
 
 type Props = {
   onNext: (data: Step1FormData) => void;
@@ -13,6 +14,7 @@ type Props = {
 export function AccountDetailsForm({ onNext }: Props) {
   const {
     handleSubmit,
+    control,
     register,
     formState: { errors },
   } = useForm<Step1FormData>({
@@ -21,12 +23,26 @@ export function AccountDetailsForm({ onNext }: Props) {
 
   return (
     <form onSubmit={handleSubmit(onNext)} className="space-y-4">
-      <CustomInput
+      {/* <CustomInput
         label="Prefix"
         inputname="prefix"
         register={register}
         type="text"
         placeholder="e.g., Dr., Prof., Mr., Mrs."
+        error={errors.prefix?.message}
+      /> */}
+      <SelectInput
+        label="Prefix"
+        inputname="prefix"
+        control={control}
+        placeholder="e.g., Dr., Prof., Mr., Mrs."
+        options={[
+          { label: "Prof.", value: "Prof." },
+          { label: "Dr.", value: "Dr." },
+          { label: "Mr.", value: "Mr." },
+          { label: "Mrs.", value: "Mrs." },
+          { label: "Ms.", value: "Ms." },
+        ]}
         error={errors.prefix?.message}
       />
       {/* "oldUser" => 'required|boolean', */}
