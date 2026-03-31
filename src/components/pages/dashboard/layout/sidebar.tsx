@@ -47,7 +47,7 @@ export function AppSidebar() {
     <Sidebar className="bg-[#F8F9FA] ">
       {/* Sidebar Header with Logo */}
       <SidebarHeader className="border-b border-[#1B2E5E1A] px-6 py-6">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/dashboard" className="flex items-center gap-2">
           <Image src={"/logo.svg"} alt="Logo icon" height={40} width={39} />
           <div className="">
             <p className="text-primaryT font-sans text-sm leading-5">

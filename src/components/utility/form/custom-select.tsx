@@ -32,7 +32,7 @@ export function SelectInput({
   options,
 }: Props) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 font-sans">
       <div className="flex items-center justify-between">
         <Label htmlFor={inputname} className="text-foreground font-medium">
           {label}
