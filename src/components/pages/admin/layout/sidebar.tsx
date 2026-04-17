@@ -32,7 +32,7 @@ const navigationItems = [
   },
   {
     label: "Loan Records",
-    href: "/admin/dashboard/loans-Records",
+    href: "/admin/dashboard/loans-records",
     icon: TrendingUp,
   },
   {

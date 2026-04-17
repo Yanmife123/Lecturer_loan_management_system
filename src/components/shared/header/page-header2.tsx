@@ -35,24 +35,28 @@ export function PageHeader({
         {breadcrumbs && breadcrumbs.length > 0 && (
           <Breadcrumb className="mb-4">
             <BreadcrumbList>
-              <BreadcrumbItem>
+              {/* <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <Link href="/">Home</Link>
                 </BreadcrumbLink>
-              </BreadcrumbItem>
+              </BreadcrumbItem> */}
 
               {breadcrumbs.map((item, index) => (
                 <div
                   key={`${item.label}-${index}`}
                   className="flex items-center gap-1.5"
                 >
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
+                  {index !== 0 && <BreadcrumbSeparator />}
+                  <BreadcrumbItem className="font-sans text-sm">
                     {index === breadcrumbs.length - 1 || !item.href ? (
-                      <BreadcrumbPage>{item.label}</BreadcrumbPage>
+                      <BreadcrumbPage className="text-[#1B2E5E]">
+                        {item.label}
+                      </BreadcrumbPage>
                     ) : (
                       <BreadcrumbLink asChild>
-                        <Link href={item.href}>{item.label}</Link>
+                        <Link href={item.href} className="text-[#64748B]">
+                          {item.label}
+                        </Link>
                       </BreadcrumbLink>
                     )}
                   </BreadcrumbItem>
