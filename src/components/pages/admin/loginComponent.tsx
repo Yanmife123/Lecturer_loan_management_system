@@ -17,7 +17,7 @@ const signInScheme = z.object({
 
 type FormSchema = z.infer<typeof signInScheme>;
 
-export function LoginForm() {
+export function AdminLoginForm() {
   const mutation = useMutation({
     mutationFn: async (formData: FormSchema) => {
       const res = await fetch("/api/loans", {
@@ -49,17 +49,17 @@ export function LoginForm() {
             <Link href={"/"}>
               <Image src={"/logo.svg"} alt="Logo icon" height={40} width={39} />
             </Link>
-            <h2 className="text-primaryT text-xl leading-7">Staff Login</h2>
+            <h2 className="text-primaryT text-xl leading-7">Admin Login</h2>
           </div>
           <p className="text-[#64748B] text-sm leading-5">
-            Access your cooperative account
+            Enter your credentials to access the admin portal
           </p>
         </div>
         <div className="py-3">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="space-y-4">
               <EmailInput
-                label=" Memeber Email"
+                label="Admin Email"
                 inputname="email"
                 register={register}
                 error={errors.email?.message}
