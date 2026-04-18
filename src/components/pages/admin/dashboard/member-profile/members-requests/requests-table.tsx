@@ -1,65 +1,55 @@
+"use client";
 import {
   DynamicTable,
   TableAction,
   TableColumn,
 } from "@/components/shared/table/dyanmic-table";
+import { UserRole } from "@/lib/hooks/useUser";
 
-interface MemberRequest {
-  id: number;
-  name: string;
+import { useQuery } from "@tanstack/react-query";
+import { allMemberRequestsPending } from "@/lib/api/member/all_member_request";
+import { TableSkeleton } from "@/components/shared/skeleton/skeleton-table";
+
+export interface MemberRequest {
+  id: string;
+  prefix: string;
+  surname: string;
+  other_names: string;
   email: string;
-  phone: string;
-  staffId: string;
-  dateRequested: string;
-  status: string;
+  role: UserRole;
+  member_type: "old" | "new";
+  status: "active" | "suspended" | "exited" | "pending";
+  gender: "male" | "female";
+  date_of_birth: string;
+  marital_status: string;
+  residential_address: string;
+  permanent_address: string;
+  phone_number: string;
+  created_at: string;
 }
 
-const MEMBER_REQUESTS: MemberRequest[] = [
-  {
-    id: 1,
-    name: "Dr. Adeyemi Johnson",
-    email: "a.johnson@run.edu.ng",
-    phone: "08012345678",
-    staffId: "RUN/2024/001",
-    dateRequested: "Apr 10, 2026",
-    status: "Pending",
-  },
-  {
-    id: 2,
-    name: "Mrs. Grace Okonkwo",
-    email: "g.okonkwo@run.edu.ng",
-    phone: "08022223333",
-    staffId: "RUN/2023/045",
-    dateRequested: "Apr 12, 2026",
-    status: "Approved",
-  },
-  {
-    id: 3,
-    name: "Prof. Samuel Adeleke",
-    email: "s.adeleke@run.edu.ng",
-    phone: "08033334444",
-    staffId: "RUN/2022/112",
-    dateRequested: "Apr 14, 2026",
-    status: "Pending",
-  },
-  {
-    id: 4,
-    name: "Mr. David Okoro",
-    email: "d.okoro@run.edu.ng",
-    phone: "08055556666",
-    staffId: "RUN/2024/089",
-    dateRequested: "Apr 15, 2026",
-    status: "Rejected",
-  },
-];
-
 export function MemberRequestsTable() {
+  const {
+    data: Member,
+    isLoading,
+    error,
+    isSuccess,
+  } = useQuery({
+    queryKey: ["memberRequests"],
+    queryFn: allMemberRequestsPending,
+  });
   const columns: TableColumn<MemberRequest>[] = [
-    { label: "Name", key: "name" },
+    {
+      label: "Surname",
+      key: "surname",
+      render(value, row) {
+        return `${row.prefix} ${row.surname} ${row.other_names}`;
+      },
+    },
     { label: "Email", key: "email" },
-    { label: "Phone", key: "phone" },
-    { label: "Staff ID", key: "staffId" },
-    { label: "Date Requested", key: "dateRequested" },
+    { label: "Phone", key: "phone_number" },
+    // { label: "Staff ID", key: "staffId" },
+    { label: "Date Requested", key: "created_at" },
     { label: "Status", key: "status" },
   ];
   const actions: TableAction<MemberRequest>[] = [
@@ -87,11 +77,19 @@ export function MemberRequestsTable() {
 
   return (
     <div className="overflow-x-auto">
-      <DynamicTable
-        data={MEMBER_REQUESTS}
-        columns={columns}
-        actions={actions}
-      />
+      {isLoading && <TableSkeleton />}
+
+      {isSuccess ? (
+        Member && (
+          <DynamicTable
+            data={Member.data.data}
+            columns={columns}
+            actions={actions}
+          />
+        )
+      ) : (
+        <div>{error?.message}</div>
+      )}
     </div>
   );
 }

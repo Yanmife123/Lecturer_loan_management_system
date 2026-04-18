@@ -1,3 +1,4 @@
+import { MemberRequestsTable } from "@/components/pages/admin/dashboard/member-profile/members-requests/requests-table";
 import { PageHeader } from "@/components/shared/header/page-header2";
 export default function MemberRequestsPage() {
   return (
@@ -13,6 +14,7 @@ export default function MemberRequestsPage() {
           },
         ]}
       />
+      <MemberRequestsTable />
     </div>
   );
 }

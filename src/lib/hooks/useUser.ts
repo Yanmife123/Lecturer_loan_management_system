@@ -15,7 +15,7 @@ export interface CookieUser {
   email: string;
   role: UserRole;
   member_type: "old" | "new";
-  status: "active" | "inactive";
+  status: "active" | "suspended" | "exited" | "pending";
   gender: "male" | "female";
   date_of_birth: string;
   marital_status: string;
