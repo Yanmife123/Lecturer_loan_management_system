@@ -89,18 +89,18 @@ export function LoginForm() {
           </form>
         </div>
         <div className="flex items-center flex-col gap-6">
-          <div>
+          {/* <div>
             <Link href={""} className="text-xs leading-4 text-[#64748B]">
               Forgot password?
             </Link>
-          </div>
+          </div> */}
           <div className="border border-[#1B2E5E1A] h-px w-[90%]" />
           <div className="text-[#64748B] text-sm leading-5">
             Don't have an account?
           </div>
           <div>
             <Link
-              href={""}
+              href={"/register"}
               className="text-base font-medium leading-6  text-[#C89B2A]"
             >
               Create Account

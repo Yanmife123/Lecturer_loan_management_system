@@ -1,8 +1,10 @@
 import { Instance1 } from "@/lib/axios";
 import { axiosResponseHandle } from "@/lib/response";
 
-export async function allMemberRequestsPending() {
-  const response = await Instance1.get("/admin/members/pending");
+export async function allMemberRequestsPending(page = 1) {
+  const response = await Instance1.get("/admin/members/pending", {
+    params: { page },
+  });
   return axiosResponseHandle(response);
 }
 export async function MemberRequestsPendingSingle(id: string) {
@@ -10,8 +12,10 @@ export async function MemberRequestsPendingSingle(id: string) {
   return axiosResponseHandle(response);
 }
 
-export async function allMemberRequestsReviews() {
-  const response = await Instance1.get("/admin/members/reviews");
+export async function allMemberRequestsReviews(page = 1) {
+  const response = await Instance1.get("/admin/members/reviews", {
+    params: { page },
+  });
   return axiosResponseHandle(response);
 }
 export async function MemberRequestsReviewsSingle(id: string) {
