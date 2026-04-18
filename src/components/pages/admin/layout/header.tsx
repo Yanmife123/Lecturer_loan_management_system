@@ -1,6 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/lib/hooks/useUser";
+import { SkeletonHeader } from "@/components/shared/header/dashboard-layout-header-skeleton";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,6 +38,7 @@ function HeaderCollapseButton() {
 }
 
 export function Header() {
+  const { user, fullName, loading } = useUser();
   return (
     <header className="sticky top-0 z-40 w-full bg-card border-b border-[#1B2E5E1A]">
       <div className="flex items-center justify-between px-6 py-5 gap-4">
@@ -53,54 +56,64 @@ export function Header() {
         </div>
 
         {/* Right side - Icons and user menu */}
-        <div className="flex items-center gap-4">
-          {/* Notification Bell */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative text-foreground/70 hover:text-foreground"
-          >
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-          </Button>
-          <div className="space-y-1 max-md:hidden">
-            <div className="text-primaryT text-sm leading-5 font-sans">
-              Dr. Adeyemi Johnson (Admin)
+        {loading ? (
+          <SkeletonHeader />
+        ) : user ? (
+          <div className="flex items-center gap-4">
+            {/* Notification Bell */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative text-foreground/70 hover:text-foreground"
+            >
+              <Bell className="w-5 h-5" />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            </Button>
+            <div className="space-y-1 max-md:hidden">
+              <div className="text-primaryT text-sm leading-5 font-sans">
+                {user.prefix} {user.surname} ({user.role})
+              </div>
+              <div className="text-[#64748B] font-sans text-xs leading-4">
+                Cooperative Officer
+              </div>
             </div>
-            <div className="text-[#64748B] font-sans text-xs leading-4">
-              Cooperative Officer
-            </div>
+            {/* User Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full">
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage
+                      src="https://github.com/shadcn.png"
+                      alt="User"
+                    />
+                    <AvatarFallback>
+                      {user.surname.charAt(0) + user.other_names.charAt(0) ||
+                        "NN"}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="flex flex-col">
+                  <span className="text-sm font-semibold">{fullName}</span>
+                  <span className="text-xs text-foreground/50">
+                    {user.email}
+                  </span>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <Settings className="w-4 h-4 mr-2" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-red-600">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  <span>Logout</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-          {/* User Menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Avatar className="w-8 h-8">
-                  <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-                  <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel className="flex flex-col">
-                <span className="text-sm font-semibold">John Doe</span>
-                <span className="text-xs text-foreground/50">
-                  john@example.com
-                </span>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Settings className="w-4 h-4 mr-2" />
-                <span>Settings</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-red-600">
-                <LogOut className="w-4 h-4 mr-2" />
-                <span>Logout</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        ) : null}
       </div>
     </header>
   );

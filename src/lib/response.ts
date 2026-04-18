@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios";
 
 export function axiosResponseHandle(response: AxiosResponse) {
-  if (!response.data.success) {
+  if (!response.data.status) {
     console.log("Response Error:", response.data.message);
     throw new Error(response.data?.message || "Network Error");
   }
