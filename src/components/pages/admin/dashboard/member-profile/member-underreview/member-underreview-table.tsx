@@ -1,9 +1,19 @@
 "use client";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { allMemberRequestsReviews } from "@/lib/api/member/all_member_request";
+import {
+  useQuery,
+  keepPreviousData,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import {
+  allMemberRequestsReviews,
+  GenSecApproveMemberReviews,
+  PresidentApproveMemberReviews,
+} from "@/lib/api/member/all_member_request";
 import { LaravelPaginationMeta } from "@/components/shared/table/laravel-pagination-type";
 import { useState } from "react";
 import { TableSkeleton } from "@/components/shared/skeleton/skeleton-table";
+import { ConfirmModal } from "@/components/shared/Modal";
 import {
   DynamicTable,
   TableColumn,
@@ -11,9 +21,15 @@ import {
 } from "@/components/shared/table/dyanmic-table";
 import { Member } from "@/lib/type/admin/dashboard/member-profile/member-underreview";
 import { useRole } from "@/lib/hooks/useRole";
+import { toast } from "sonner";
 
 export function MemberUnderReviewTable() {
   const [page, setPage] = useState(1);
+  const queryClient = useQueryClient();
+  const [openPresidentApprove, setOpenPresidentApprove] =
+    useState<boolean>(false);
+  const [openGenSecApprove, setOpenGenSecApprove] = useState<boolean>(false);
+  const [selectedRow, setSelectedRow] = useState<string>("");
   const { hasRole } = useRole();
   const {
     data: memberData,
@@ -163,18 +179,59 @@ export function MemberUnderReviewTable() {
     {
       label: "President Approve",
       variant: "outline",
-      show: (row) => row.status === "pending" && hasRole("president", "admin"),
-      onClick: (row) => console.log(row),
+      show: (row) =>
+        row.status === "pending" &&
+        !row.membership_detail?.President_approved_by &&
+        hasRole("president", "admin"),
+      onClick: (row) => {
+        setSelectedRow(String(row.id));
+        setOpenPresidentApprove(true);
+      },
     },
     {
       label: "General Secretary Approve",
       variant: "outline",
       // Handle reject action
-      onClick: (row) => console.log(row),
+      onClick: (row) => {
+        setSelectedRow(String(row.id));
+        setOpenGenSecApprove(true);
+      },
       show: (row) =>
-        row.status === "pending" && hasRole("gen_secretary", "admin"),
+        row.status === "pending" &&
+        !row.membership_detail?.general_secretary_approved_by &&
+        hasRole("gen_secretary", "admin"),
     },
   ];
+
+  const presidentApproveMutation = useMutation({
+    mutationFn: PresidentApproveMemberReviews,
+    onSuccess: (data) => {
+      toast.success("President Approved", { description: data.message });
+      queryClient.invalidateQueries({ queryKey: ["memberUnderreview", page] });
+    },
+    onError: (error) => {
+      toast.error("President Approval Failed", { description: error.message });
+    },
+  });
+  const genSecApproveMutation = useMutation({
+    mutationFn: GenSecApproveMemberReviews,
+    onSuccess: (data) => {
+      toast.success("General Secretary Approved", {
+        description: data.data.message,
+      });
+      queryClient.invalidateQueries({ queryKey: ["memberUnderreview", page] });
+    },
+    onError: (error) => {
+      toast.error("General Secretary Approval Failed", {
+        description: error.message,
+      });
+    },
+  });
+
+  const handleSubmit = () => {
+    presidentApproveMutation.mutate(selectedRow);
+  };
+
   return (
     <div className="overflow-x-auto">
       {isLoading && <TableSkeleton />}
@@ -192,6 +249,29 @@ export function MemberUnderReviewTable() {
       ) : (
         <div>{error?.message}</div>
       )}
+
+      <ConfirmModal
+        open={openPresidentApprove}
+        onClose={() => setOpenPresidentApprove(false)}
+        title=" President Confirm Approval"
+        description={`Are you sure you want to approve ${selectedRow} ?  This action cannot be undone.`}
+        confirmLabel="Yes, Approve"
+        confirmVariant="success"
+        onConfirm={handleSubmit}
+        loading={presidentApproveMutation.isPending}
+      />
+      <ConfirmModal
+        open={openGenSecApprove}
+        onClose={() => setOpenGenSecApprove(false)}
+        title="General Secretary Confirm Approval"
+        description={`Are you sure you want to approve ${selectedRow} ?  This action cannot be undone.`}
+        confirmLabel="Yes, Approve"
+        confirmVariant="success"
+        onConfirm={() => {
+          genSecApproveMutation.mutate(selectedRow);
+        }}
+        loading={genSecApproveMutation.isPending}
+      />
     </div>
   );
 }

@@ -14,6 +14,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { Bell, LogOut, Settings, ChevronLeft, PanelLeft } from "lucide-react";
+import { toast } from "sonner";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
+// import { useState } from "react";
 
 function HeaderCollapseButton() {
   const { toggleSidebar, state } = useSidebar();
@@ -39,6 +43,14 @@ function HeaderCollapseButton() {
 
 export function Header() {
   const { user, fullName, loading } = useUser();
+  const router = useRouter();
+  // const [isloading, setIsLoading] = useState(false);
+  const handleLogOut = async () => {
+    Cookies.remove("token");
+    Cookies.remove("user");
+    toast.success("Logout Sucessfully ");
+    router.push("/login");
+  };
   return (
     <header className="sticky top-0 z-40 w-full bg-card border-b border-[#1B2E5E1A]">
       <div className="flex items-center justify-between px-6 py-6 gap-4">
@@ -93,20 +105,23 @@ export function Header() {
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuContent align="end" className="w-56 font-sans">
                 <DropdownMenuLabel className="flex flex-col">
-                  <span className="text-sm font-semibold">{fullName}</span>
-                  <span className="text-xs text-foreground/50">
-                    {user?.email}
+                  <span className="text-sm font-semibold text-primaryT">
+                    {fullName}
                   </span>
+                  <span className="text-xs text-[#1B2E5E]">{user?.email}</span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                {/* <DropdownMenuItem>
                   <Settings className="w-4 h-4 mr-2" />
                   <span>Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600">
+                </DropdownMenuItem> */}
+                {/* <DropdownMenuSeparator /> */}
+                <DropdownMenuItem
+                  className="text-red-600 hover:text-red-600 cursor-pointer"
+                  onClick={handleLogOut}
+                >
                   <LogOut className="w-4 h-4 mr-2" />
                   <span>Logout</span>
                 </DropdownMenuItem>

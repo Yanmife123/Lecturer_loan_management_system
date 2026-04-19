@@ -43,3 +43,27 @@ export async function putPendingMemberUnderReview({
   );
   return axiosResponseHandle(response);
 }
+
+// President Approve Review User
+
+export async function PresidentApproveMemberReviews(id: string) {
+  const response = await Instance1.post(
+    `/admin/members/reviews/${id}/president-approve`,
+  );
+  return axiosResponseHandle(response);
+}
+export async function GenSecApproveMemberReviews(id: string) {
+  const response = await Instance1.post(
+    `/admin/members/reviews/${id}/gen-secretary-approve`,
+  );
+  return axiosResponseHandle(response);
+}
+
+// All Active Member  api
+
+export async function allActiveMember(page = 1) {
+  const response = await Instance1.get("/admin/members", {
+    params: { page },
+  });
+  return axiosResponseHandle(response);
+}
