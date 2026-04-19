@@ -5,26 +5,30 @@ import { CheckCircle } from "lucide-react";
 import { Modal, ConfirmModal } from "@/components/shared/Modal";
 import { CustomInput } from "@/components/utility/form/custom-input";
 
-interface ApproveFormValues {
+export interface ApproveFormValues {
   membership_no: string;
-  effective_date_of_membership: string;
-  total_oustanding_loan: string;
-  total_saving: string;
+  effective_date_of_membership: Date;
+  total_oustanding_loan: number;
+  total_saving: number;
 }
 
 interface ApproveMemberModalProps {
   open: boolean;
   onClose: () => void;
-  // memberName: string;
-  // memberId: string | number;
-  // onApprove: (data: ApproveFormValues) => Promise<void>;
+  memberName: string;
+  memberId: string | number;
+  onApprove: (payload: {
+    id: string;
+    data: ApproveFormValues;
+  }) => Promise<void>;
 }
 
 export function ApproveMemberModal({
   open,
   onClose,
-  // memberName,
-  // onApprove,
+  memberName,
+  onApprove,
+  memberId,
 }: ApproveMemberModalProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -49,7 +53,10 @@ export function ApproveMemberModal({
     if (!pendingData) return;
     setLoading(true);
     try {
-      // await onApprove(pendingData);
+      await onApprove({
+        id: memberId.toString(),
+        data: pendingData,
+      });
       console.log(pendingData);
       setConfirmOpen(false);
       reset();
@@ -71,7 +78,7 @@ export function ApproveMemberModal({
         onClose={handleClose}
         size="md"
         title="Approve Membership"
-        description={`Fill in the membership details for`}
+        description={`Fill in the membership details for ${memberName}`}
       >
         {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -137,7 +144,7 @@ export function ApproveMemberModal({
         onClose={() => setConfirmOpen(false)}
         onConfirm={handleConfirm}
         title="Confirm Approval"
-        description={`Are you sure you want to approve  as a member? This action cannot be undone.`}
+        description={`Are you sure you want to approve ${memberName}  as a member? This action cannot be undone.`}
         confirmLabel="Yes, Approve"
         confirmVariant="success"
         loading={loading}

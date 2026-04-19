@@ -32,12 +32,13 @@ export async function putPendingMemberUnderReview({
   data: {
     membership_no: string;
     effective_date_of_membership: Date;
-    total_outstanding_loan: number;
+    total_oustanding_loan: number;
     total_saving: number;
   };
 }) {
   const response = await Instance1.post(
-    `/admin/members/pending/${id}/underreview`,
+    `/admin/member/${id}/underview`,
+
     data,
   );
   return axiosResponseHandle(response);

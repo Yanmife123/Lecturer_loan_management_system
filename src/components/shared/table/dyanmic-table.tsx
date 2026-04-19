@@ -30,6 +30,10 @@ import {
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export interface TableColumn<T> {
+  /** Optional unique identifier used as the React key.
+   *  Use this when two columns share the same `key` (e.g. two columns
+   *  both reading from `membership_detail`). Falls back to String(key). */
+  id?: string;
   key: keyof T;
   label: string;
   sortable?: boolean;
@@ -218,6 +222,13 @@ function PaginationBar({
   );
 }
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+/** Returns a unique React key for a column: prefers `id`, falls back to `key`. */
+function columnReactKey<T>(column: TableColumn<T>): string {
+  return column.id ?? String(column.key);
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 export function DynamicTable<T extends Record<string, any>>({
@@ -335,7 +346,7 @@ export function DynamicTable<T extends Record<string, any>>({
           <TableRow className="border-b border-gray-200 dark:border-gray-800">
             {columns.map((column) => (
               <TableHead
-                key={String(column.key)}
+                key={columnReactKey(column)}
                 className={`py-3 px-4 text-left font-bold text-sm text-primaryT font-sans dark:text-gray-300 ${
                   column.width ? `w-${column.width}` : ""
                 } ${column.className || ""}`}
@@ -385,7 +396,7 @@ export function DynamicTable<T extends Record<string, any>>({
               >
                 {columns.map((column) => (
                   <TableCell
-                    key={String(column.key)}
+                    key={columnReactKey(column)}
                     className={`py-4 px-4 text-primaryT text-sm font-sans dark:text-gray-300 ${column.className || ""}`}
                   >
                     {column.render
@@ -471,7 +482,7 @@ export function DynamicTable<T extends Record<string, any>>({
               <CardContent className="space-y-3">
                 {columns.slice(1).map((column) => (
                   <div
-                    key={String(column.key)}
+                    key={columnReactKey(column)}
                     className="flex justify-between items-center gap-2"
                   >
                     <span className="text-sm font-medium text-[#64748B] dark:text-gray-400">

@@ -44,7 +44,9 @@ export function Modal({
   // Prevent background scroll
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [open]);
 
   if (!open) return null;
@@ -52,9 +54,14 @@ export function Modal({
   return createPortal(
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ backgroundColor: "rgba(0,0,0,0.45)", backdropFilter: "blur(2px)" }}
-      onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 font-sans"
+      style={{
+        backgroundColor: "rgba(0,0,0,0.45)",
+        backdropFilter: "blur(2px)",
+      }}
+      onClick={(e) => {
+        if (e.target === overlayRef.current) onClose();
+      }}
     >
       <div
         className={`
@@ -69,12 +76,15 @@ export function Modal({
           <div className="flex items-start justify-between p-6 pb-4 border-b border-gray-100">
             <div>
               {title && (
-                <h2 id="modal-title" className="text-lg font-semibold text-gray-900">
+                <h2
+                  id="modal-title"
+                  className="text-lg font-semibold text-primaryT"
+                >
                   {title}
                 </h2>
               )}
               {description && (
-                <p className="text-sm text-gray-500 mt-0.5">{description}</p>
+                <p className="text-sm text-[#1B2E5E] mt-0.5">{description}</p>
               )}
             </div>
             <button
@@ -90,7 +100,7 @@ export function Modal({
         <div className="p-6">{children}</div>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }
 
@@ -123,7 +133,7 @@ export function ConfirmModal({
 
   return (
     <Modal open={open} onClose={onClose} size="sm" hideHeader>
-      <div className="text-center space-y-4">
+      <div className="text-center space-y-4 font-sans">
         {/* Icon */}
         <div
           className={`mx-auto w-12 h-12 rounded-full flex items-center justify-center ${
@@ -138,9 +148,9 @@ export function ConfirmModal({
         </div>
 
         <div>
-          <h3 className="text-base font-semibold text-gray-900">{title}</h3>
+          <h3 className="text-base font-semibold text-primaryT">{title}</h3>
           {description && (
-            <p className="text-sm text-gray-500 mt-1">{description}</p>
+            <p className="text-sm text-[#1B2E5E] mt-1">{description}</p>
           )}
         </div>
 

@@ -24,6 +24,11 @@ export default function MemberProfilePage() {
               Member Register Requests
             </Link>
           </Button>
+          <Button variant="outline">
+            <Link href="/admin/dashboard/members/member-underreview">
+              Member Under Review
+            </Link>
+          </Button>
           <Button variant="default">
             <Link href="/admin/dashboard/members/all-members">All Members</Link>
           </Button>
