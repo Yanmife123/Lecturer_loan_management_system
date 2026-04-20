@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PencilIcon } from "lucide-react";
 import InfoField from "./info-field";
+import { Member } from "@/lib/type/profile/userProfile";
+import { formatDate } from "@/components/utility/functions/data-fn";
 
-export default function ProfileInfo() {
+export default function ProfileInfo({ data }: { data: Member }) {
   return (
     <Card className="p-8 font-sans">
       <div className="flex items-center justify-between mb-8">
@@ -25,37 +27,49 @@ export default function ProfileInfo() {
       <div className="grid grid-cols-2 gap-x-12 gap-y-6">
         {/* Left Column */}
         <div className="space-y-6">
-          <InfoField label="Prefix" value="Dr." />
-          <InfoField label="Gender" value="Male" />
-          <InfoField label="Marital Status" value="Married" />
+          <InfoField label="Prefix" value={data.prefix} />
+          <InfoField label="Gender" value={data.gender} />
+          <InfoField label="Marital Status" value={data.marital_status} />
           <InfoField
             label="Department/Div"
-            value="Department of Computer Science"
+            value={data.member_info.department}
           />
           <InfoField label="Salary Scale" value="CONULS 01" />
           <InfoField label="Date of First Appointment" value="8/6/2020" />
           <InfoField
             label="Residential Address"
-            value="In University Staff Quarters, Redemption City"
+            value={data.residential_address}
           />
           <InfoField
             label="Permanent Home Address"
-            value="45 Adeyemi Street, Ijeja, Lagos State"
+            value={data.permanent_address}
           />
           <InfoField
             label="Email Address"
-            value="a.johnsonu.edu.ng (read-only)"
+            value={`${data.email} (read-only)`}
           />
         </div>
 
         {/* Right Column */}
         <div className="space-y-6">
-          <InfoField label="Full Name" value="Dr. Adeyemi Johnson" />
-          <InfoField label="Date of Birth" value="3/8/1985" />
-          <InfoField label="Faculty" value="Faculty of Natural Sciences" />
-          <InfoField label="Present Designation" value="Senior Lecturer" />
-          <InfoField label="Staff File No" value="BJN/2024/001" />
-          <InfoField label="Telephone Number" value="+234 803 523 6567" />
+          <InfoField
+            label="Full Name"
+            value={`${data.prefix} ${data.surname} ${data.other_names}`}
+          />
+          <InfoField
+            label="Date of Birth"
+            value={formatDate(data.date_of_birth, "short")}
+          />
+          <InfoField label="Faculty" value={data.member_info.faculty} />
+          <InfoField
+            label="Present Designation"
+            value={data.member_info.designation}
+          />
+          <InfoField
+            label="Staff File No"
+            value={data.member_info.staff_file_no}
+          />
+          <InfoField label="Telephone Number" value={data.phone_number} />
           <div></div> {/* Spacer */}
           <div></div> {/* Spacer */}
           <div></div> {/* Spacer */}

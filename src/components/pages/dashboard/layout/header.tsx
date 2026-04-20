@@ -85,9 +85,9 @@ export function Header() {
               <div className="text-primaryT text-sm leading-5 font-sans max-w-[160px] truncate">
                 {fullName}
               </div>
-              <div className="text-[#64748B] font-sans text-xs leading-4">
-                Staff ID: RUN/2024/001
-              </div>
+              {/* <div className="text-[#64748B] font-sans text-xs leading-4">
+                Member ID: {user.}
+              </div> */}
             </div>
             {/* User Menu */}
             <DropdownMenu>
