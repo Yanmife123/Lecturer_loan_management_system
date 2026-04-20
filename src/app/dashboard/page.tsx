@@ -6,10 +6,7 @@ import { PiggyBank, FileText, User, TrendingUp } from "lucide-react";
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
-      <Banner
-        title="Welcome back, Dr. Johnson!"
-        paragraph="Here's an overview of your cooperative account"
-      />
+      <Banner />
       <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4">
         <StatCard icon={PiggyBank} value="₦850,000" label="Savings Balance" />
         <StatCard

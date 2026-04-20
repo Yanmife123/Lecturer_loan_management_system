@@ -1,4 +1,4 @@
-import { AuthInstance, LoginInstance } from "@/lib/axios";
+import { AuthInstance, Instance1, LoginInstance } from "@/lib/axios";
 import { axiosResponseHandle } from "@/lib/response";
 import {
   AllFormData,
@@ -25,5 +25,10 @@ export async function RegisterApi(data: FormData) {
 
 export async function AdminLoginApi(data: LoginData) {
   const response = await LoginInstance.post("/admin/login", data);
+  return axiosResponseHandle(response);
+}
+
+export async function Me() {
+  const response = await Instance1.get("/me");
   return axiosResponseHandle(response);
 }

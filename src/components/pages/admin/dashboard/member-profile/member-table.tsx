@@ -57,7 +57,7 @@ export function MemberTable() {
     error,
     isSuccess,
   } = useQuery({
-    queryKey: ["memberRequests", page],
+    queryKey: ["allActiveMembers", page],
     queryFn: () => allActiveMember(page),
     placeholderData: keepPreviousData,
   });

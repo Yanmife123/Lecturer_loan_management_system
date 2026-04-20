@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PencilIcon } from "lucide-react";
 import InfoField from "./info-field";
+import { Member } from "@/lib/type/profile/userProfile";
 
-export default function NextOfKin() {
+export default function NextOfKin({ data }: { data: Member }) {
   return (
     <Card className="p-8 font-sans">
       <div className="flex items-center justify-between mb-8">
@@ -26,20 +27,23 @@ export default function NextOfKin() {
         {/* Left Column */}
         <div className="space-y-6">
           <InfoField
-            label="Full Name (Surname First)"
-            value="Johnson, Grace Oluwatosin"
+            label="Full Name "
+            value={data.member_info.nok_full_name}
           />
-          <InfoField label="Phone Number" value="+254 805 987 6643" />
+          <InfoField label="Phone Number" value={data.member_info.nok_phone} />
           <InfoField
             label="Residential Address"
-            value="45 Adeyemi Street, Ijeja, Lagos State"
+            value={data.member_info.nok_address}
           />
         </div>
 
         {/* Right Column */}
         <div className="space-y-6">
-          <InfoField label="Relationship" value="Spouse" />
-          <InfoField label="Email Address" value="grace.johnson@gmail.com" />
+          <InfoField
+            label="Relationship"
+            value={data.member_info.nok_relationship}
+          />
+          <InfoField label="Email Address" value={data.member_info.nok_email} />
           <div></div> {/* Spacer */}
         </div>
       </div>
