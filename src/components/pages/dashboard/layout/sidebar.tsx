@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { Collapsible } from "radix-ui";
+import { useUser } from "@/lib/hooks/useUser";
 import {
   User,
   FileText,
@@ -42,7 +42,7 @@ const navigationItems = [
 export function AppSidebar() {
   const { state } = useSidebar();
   const Path = usePathname();
-
+  const { isCommittee, loading } = useUser();
   return (
     <Sidebar className="bg-[#F8F9FA] ">
       {/* Sidebar Header with Logo */}
@@ -87,6 +87,22 @@ export function AppSidebar() {
               </SidebarMenuItem>
             );
           })}
+          {loading ? null : isCommittee ? (
+            <SidebarMenuItem className="">
+              <SidebarMenuButton
+                asChild
+                tooltip="Admin Dashboard"
+                className={` ${Path.includes("/admin/dashboard") ? "bg-[#1B2E5E] text-white hover:text-white hover:bg-primaryT duration-300" : " text-primaryT bg-transparent hover:text-primaryT duration-300"}   px-4 py-4  rounded-[16px] h-10.75 `}
+              >
+                <Link href={"/admin/dashboard"}>
+                  <LayoutGrid className="w-5 h-5" />
+                  <span className="text-sm leading-5 font-medium">
+                    Admin Dashboard
+                  </span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ) : null}
         </SidebarMenu>
       </SidebarContent>
 

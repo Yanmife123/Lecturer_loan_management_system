@@ -1,9 +1,9 @@
-import { LoansComponent } from "@/components/pages/dashboard/loans/allLoanComponents";
+import { CheckingEligiblityLoan } from "@/components/pages/dashboard/loans/checking_eligiblity";
 
 export default function DashboardLoansPage() {
   return (
     <div className="">
-      <LoansComponent />
+      <CheckingEligiblityLoan />
     </div>
   );
 }

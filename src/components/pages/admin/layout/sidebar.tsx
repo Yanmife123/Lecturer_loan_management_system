@@ -91,6 +91,20 @@ export function AppSidebar() {
               </SidebarMenuItem>
             );
           })}
+          <SidebarMenuItem className="">
+            <SidebarMenuButton
+              asChild
+              tooltip="Member Dashboard"
+              className={` ${Path === "/dashboard" ? "bg-[#C89B2A] text-white hover:text-white hover:bg-[#C89B2A] duration-300" : " text-[#FFFFFFB2] bg-transparent hover:text-white hover:bg-[#C89B2A] duration-300"}   px-4 py-4  rounded-[16px] h-10.75`}
+            >
+              <Link href={"/dashboard"}>
+                <LayoutGrid className="w-5 h-5" />
+                <span className="text-sm leading-5 font-medium">
+                  Member Dashboard
+                </span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
 

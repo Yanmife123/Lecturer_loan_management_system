@@ -9,6 +9,9 @@ import { PasswordInput } from "@/components/utility/form/password-input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
+import { loginApi } from "@/lib/api/auth/auth";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const signInScheme = z.object({
   email: z.string().email("Invalid email address"),
@@ -18,13 +21,17 @@ const signInScheme = z.object({
 type FormSchema = z.infer<typeof signInScheme>;
 
 export function LoginForm() {
+  const router = useRouter();
   const mutation = useMutation({
-    mutationFn: async (formData: FormSchema) => {
-      const res = await fetch("/api/loans", {
-        method: "POST",
-        body: JSON.stringify(formData),
-      });
-      return res.json();
+    mutationFn: loginApi,
+    onSuccess: (data) => {
+      // console.log("Login successful:", data);
+      toast.success("Login successful!");
+      router.push("/dashboard");
+    },
+    onError: (error) => {
+      // console.error("Login failed:", error);
+      toast.error("Login Failed", { description: error.message });
     },
   });
 
@@ -37,8 +44,7 @@ export function LoginForm() {
   });
 
   const onSubmit: SubmitHandler<FormSchema> = async (data) => {
-    // mutation.mutate(data);
-    console.log(data);
+    mutation.mutate(data);
   };
 
   return (
@@ -83,18 +89,18 @@ export function LoginForm() {
           </form>
         </div>
         <div className="flex items-center flex-col gap-6">
-          <div>
+          {/* <div>
             <Link href={""} className="text-xs leading-4 text-[#64748B]">
               Forgot password?
             </Link>
-          </div>
+          </div> */}
           <div className="border border-[#1B2E5E1A] h-px w-[90%]" />
           <div className="text-[#64748B] text-sm leading-5">
             Don't have an account?
           </div>
           <div>
             <Link
-              href={""}
+              href={"/register"}
               className="text-base font-medium leading-6  text-[#C89B2A]"
             >
               Create Account
