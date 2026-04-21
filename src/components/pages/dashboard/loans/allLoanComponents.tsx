@@ -10,6 +10,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export function LoansComponent() {
   const {
@@ -85,12 +86,15 @@ export function LoansComponent() {
                 </div>
               </CardContent>
               <CardFooter className="bg-white border-none">
-                <div className="text-[#C89B2A] text-sm leading-5 font-medium flex items-center gap-1">
+                <Link
+                  href={`/dashboard/loans/${loan.id}`}
+                  className="text-[#C89B2A] text-sm leading-5 font-medium flex items-center gap-1"
+                >
                   Apply{" "}
                   <div className="flex items-center mt-1">
                     <ArrowRight className="w-[14px] h-[14px]" />
                   </div>
-                </div>
+                </Link>
               </CardFooter>
             </Card>
           ))}

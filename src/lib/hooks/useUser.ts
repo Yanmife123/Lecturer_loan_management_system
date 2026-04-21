@@ -1,3 +1,5 @@
+import { Member } from "../type/profile/userProfile";
+
 export type UserRole =
   | "member"
   | "admin"
@@ -30,7 +32,7 @@ import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 
 export const useUser = () => {
-  const [user, setUser] = useState<CookieUser | null>(null);
+  const [user, setUser] = useState<Member | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,7 +41,7 @@ export const useUser = () => {
     if (userData) {
       try {
         // js-cookie automatically handles %22 (") and %2C (,) decoding
-        const parsedUser: CookieUser = JSON.parse(userData);
+        const parsedUser: Member = JSON.parse(userData);
         setUser(parsedUser);
       } catch (error) {
         console.error("Error parsing user cookie:", error);

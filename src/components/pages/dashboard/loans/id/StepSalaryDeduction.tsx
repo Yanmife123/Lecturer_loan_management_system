@@ -9,16 +9,17 @@ import {
 import { LoanFormData } from "./types";
 import { Button } from "@/components/ui/button";
 // import { FileInput } from "@/components/file-input";
-import { FileInput } from "@/components/utility/form/custom-file";
-import SignaturePad from "./SignaturePad";
+// import { FileInput } from "@/components/utility/form/custom-file";
+// import SignaturePad from "./SignaturePad";
 // import { Member } from "@/types/member";
-import { Member } from "@/lib/type/profile/userProfile";
+// import { Member } from "@/lib/type/profile/userProfile";
 import { format } from "date-fns";
+import { useUser } from "@/lib/hooks/useUser";
 
 type Props = {
-  control: Control<LoanFormData>;
-  register: UseFormRegister<LoanFormData>;
-  errors: FieldErrors<LoanFormData>;
+  // control: Control<LoanFormData>;
+  // register: UseFormRegister<LoanFormData>;
+  // errors: FieldErrors<LoanFormData>;
   onNext: () => void;
   onBack: () => void;
   // member: Member;
@@ -35,9 +36,9 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 export default function StepSalaryDeduction({
-  control,
-  register,
-  errors,
+  // control,
+  // register,
+  // errors,
   onNext,
   onBack,
   // member,
@@ -52,6 +53,7 @@ export default function StepSalaryDeduction({
   // const effectiveMonth = membership?.effective_date_of_membership
   //   ? format(new Date(membership.effective_date_of_membership), "MMMM yyyy")
   //   : "______";
+  const { user, loading } = useUser();
 
   return (
     <div className="space-y-6">
@@ -81,66 +83,37 @@ export default function StepSalaryDeduction({
         </div>
 
         {/* Info Grid */}
-        <div className="grid grid-cols-2 gap-x-8 gap-y-2">
-          {/* <InfoRow
-            label="Membership No:"
-            value={membership?.membership_no ?? "—"}
-          />
-          <InfoRow label="Staff File No:" value={info?.staff_file_no ?? "—"} />
-          <InfoRow label="Surname:" value={member.surname} />
-          <InfoRow label="Other Names:" value={member.other_names} /> */}
-          {/* <InfoRow label="Department:" value={info?.department ?? "—"} />
-          <InfoRow label="Designation:" value={info?.designation ?? "—"} /> */}
-        </div>
+        {!loading && user && (
+          <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+            <InfoRow
+              label="Membership No:"
+              value={user.membership_detail.membership_no ?? "—"}
+            />
+            <InfoRow
+              label="Staff File No:"
+              value={user.member_info.staff_file_no ?? "—"}
+            />
+            <InfoRow label="Surname:" value={user.surname} />
+            <InfoRow label="Other Names:" value={user.other_names} />
+            <InfoRow
+              label="Department:"
+              value={user.member_info.department ?? "—"}
+            />
+            <InfoRow
+              label="Designation:"
+              value={user.member_info.designation ?? "—"}
+            />
+          </div>
+        )}
 
-        <p className="text-sm text-gray-700 leading-relaxed">
+        {/* <p className="text-sm text-gray-700 leading-relaxed">
           I hereby authorize you to deduct from my monthly salary the sum of{" "}
           <span className="font-semibold text-[#1B2E5E] underline">
             {formattedAmount}
           </span>{" "}
-          for loan repayment, effective from{" "}
-          {/* <span className="font-semibold text-[#1B2E5E] underline">
-            {effectiveMonth}
-          </span> */}
+        
           .
-        </p>
-
-        {/* Photo Upload */}
-        <div className="space-y-3">
-          <p className="text-sm font-medium text-gray-700">
-            Upload Passport Photos (2)
-          </p>
-          <div className="grid grid-cols-2 gap-4">
-            <FileInput
-              register={register}
-              inputname="passport_photo_1"
-              label="Photo 1"
-              hint="JPG or PNG, max 2MB"
-              error={errors.passport_photo_1?.message as string}
-            />
-            <FileInput
-              register={register}
-              inputname="passport_photo_2"
-              label="Photo 2"
-              hint="JPG or PNG, max 2MB"
-              error={errors.passport_photo_2?.message as string}
-            />
-          </div>
-        </div>
-
-        {/* Signature */}
-        <Controller
-          name="salary_deduction_signature"
-          control={control}
-          render={({ field }) => (
-            <SignaturePad
-              label="Signature"
-              value={field.value}
-              onChange={field.onChange}
-              error={errors.salary_deduction_signature?.message}
-            />
-          )}
-        />
+        </p> */}
       </div>
 
       <div className="flex gap-3">
