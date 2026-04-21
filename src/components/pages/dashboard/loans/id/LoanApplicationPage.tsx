@@ -23,6 +23,9 @@ import { useQuery } from "@tanstack/react-query";
 import { SingleLoan } from "@/lib/api/loan/all_loan_type";
 import { LoanApplicationSkeleton } from "@/components/shared/skeleton/skeleton-card";
 import { PageHeader } from "@/components/shared/header/page-header2";
+import { Instance1 } from "@/lib/axios";
+import { toast } from "sonner";
+import { CreateLoanApplication } from "@/lib/api/loan/loanApplication";
 
 const fileListSchema = z.custom<FileList>(
   (val) => typeof window === "undefined" || val instanceof FileList,
@@ -51,6 +54,9 @@ const createStep1Schema = (maxAmount: number, maxDuration: number) =>
       .number({ invalid_type_error: "Enter a valid amount" })
       .positive("Amount must be greater than 0"),
     gross_salary: z.coerce
+      .number({ invalid_type_error: "Enter a valid amount" })
+      .positive("Amount must be greater than 0"),
+    monthly_saving_during_repayments: z.coerce
       .number({ invalid_type_error: "Enter a valid amount" })
       .positive("Amount must be greater than 0"),
     purpose: z.string().min(2, "Purpose is required"),
@@ -84,6 +90,7 @@ export default function LoanApplicationPage({ id }: { id: string }) {
   const router = useRouter();
   const [step, setStep] = useState<LoanStep>(1);
   const [submitted, setSubmitted] = useState(false);
+  const { fullName, loading } = useUser();
 
   const {
     data: Loan,
@@ -121,35 +128,44 @@ export default function LoanApplicationPage({ id }: { id: string }) {
   // ─── Submit mutation ──────────────────────────────────────────────────────
   const { mutate: submitLoan, isPending } = useMutation({
     mutationFn: async (data: LoanFormData) => {
+      console.log(data);
       const formData = new FormData();
-      formData.append("loan_amount", String(data.loan_amount));
-      formData.append("repayment_period", String(data.repayment_period));
+      formData.append("amount", String(data.amount));
+      formData.append("duration_month", String(data.duration_month));
       formData.append("bank_name", data.bank_name);
-      formData.append("bank_account_number", data.bank_account_number);
-      formData.append("borrower_signature", data.borrower_signature);
+      formData.append("bank_account", data.bank_account);
+      formData.append("net_salary", String(data.net_salary));
+      formData.append("gross_salary", String(data.gross_salary));
+      formData.append("purpose", data.purpose);
       formData.append(
-        "salary_deduction_signature",
-        data.salary_deduction_signature,
+        "monthly_saving_during_repayments",
+        String(data.monthly_saving_during_repayments),
       );
-      formData.append("guarantor1_email", data.guarantor1_email);
-      formData.append("guarantor2_email", data.guarantor2_email);
-
-      if (data.passport_photo_1?.[0]) {
-        formData.append("passport_photo_1", data.passport_photo_1[0]);
+      if (data.pay_slip?.[0]) {
+        formData.append("pay_slip", data.pay_slip[0]);
       }
-      if (data.passport_photo_2?.[0]) {
-        formData.append("passport_photo_2", data.passport_photo_2[0]);
-      }
+      // formData.append("borrower_signature", data.borrower_signature);
+      // formData.append(
+      //   "salary_deduction_signature",
+      //   // data.salary_deduction_signature,
+      // );
+      formData.append("loan_type_id", id);
+      formData.append("guarantor_email", data.guarantor_email);
 
-      return axios.post("/api/loans/apply", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      // console.log(formData.getAll);
+
+      return CreateLoanApplication(formData);
     },
-    onSuccess: () => setSubmitted(true),
+    onSuccess: () => {
+      setSubmitted(true);
+    },
     onError: (error) => {
       console.error("Loan submission failed:", error);
+      toast.error("Loan submission failed:", { description: error.message });
     },
   });
+
+  const formValues = getValues();
 
   // ─── Step navigation ──────────────────────────────────────────────────────
   const goNext = async () => {
@@ -160,14 +176,11 @@ export default function LoanApplicationPage({ id }: { id: string }) {
   const goBack = () =>
     setStep((prev) => (prev > 1 ? ((prev - 1) as LoanStep) : prev));
 
-  const onFinalSubmit = handleSubmit((data) => submitLoan(data));
-
-  const formValues = getValues();
+  const onFinalSubmit = handleSubmit(() => submitLoan(formValues));
 
   // ─── Render ───────────────────────────────────────────────────────────────
   if (submitted) return <SuccessModal />;
 
-  const { fullName, loading } = useUser();
   return (
     <div className="font-sans">
       {isLoading && (
@@ -210,8 +223,8 @@ export default function LoanApplicationPage({ id }: { id: string }) {
                   onNext={goNext}
                   onBack={goBack}
                   fullname={fullName}
-                  loanAmount={formValues.loan_amount}
-                  repaymentPeriod={formValues.repayment_period}
+                  loanAmount={formValues.amount}
+                  repaymentPeriod={formValues.duration_month}
                 />
               )}
 
@@ -222,7 +235,7 @@ export default function LoanApplicationPage({ id }: { id: string }) {
                   // errors={errors}
                   onNext={goNext}
                   onBack={goBack}
-                  loanAmount={formValues.loan_amount}
+                  loanAmount={formValues.amount}
                 />
               )}
 

@@ -1,21 +1,22 @@
 export type LoanFormData = {
   // Step 1
-  loan_amount: number;
-  repayment_period: number;
+  amount: number;
+  duration_month: number;
   bank_name: string;
-  bank_account_number: string;
-
+  bank_account: string;
+  net_salary: number;
+  gross_salary: number;
+  purpose: string;
+  pay_slip: FileList;
+  monthly_saving_during_repayments: number;
   // Step 2
-  borrower_signature: string;
+  // borrower_signature: string;
 
   // Step 3
-  passport_photo_1: FileList;
-  passport_photo_2: FileList;
-  salary_deduction_signature: string;
+  // salary_deduction_signature: string;
 
   // Step 4
-  guarantor1_email: string;
-  guarantor2_email: string;
+  guarantor_email: string;
 };
 
 export type LoanStep = 1 | 2 | 3 | 4 | 5;
@@ -23,12 +24,22 @@ export type LoanStep = 1 | 2 | 3 | 4 | 5;
 export type GuarantorStatus = "pending" | "accepted" | "rejected";
 
 export type LoanPayload = {
-  loan_amount: number;
-  repayment_period: number;
+  // Step 1
+  amount: number;
+  duration_month: number;
   bank_name: string;
-  bank_account_number: string;
-  borrower_signature: string;
+  bank_account: string;
+  net_salary: number;
+  gross_salary: number;
+  purpose: string;
+  pay_slip: FileList;
+  // Step 2
+  // borrower_signature: string;
+
+  // Step 3
   salary_deduction_signature: string;
-  guarantor1_email: string;
-  guarantor2_email: string;
+  monthly_saving_during_repayments: number;
+
+  // Step 4
+  guarantor_email: string;
 };

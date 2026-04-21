@@ -39,11 +39,11 @@ export default function StepGuarantors({
           <p className="text-sm font-medium text-[#1B2E5E]">Guarantor 1</p>
           <CustomInput
             register={register}
-            inputname="guarantor1_email"
+            inputname="guarantor_email"
             label="Email Address"
             placeholder="guarantor1@example.com"
             type="email"
-            error={errors.guarantor1_email?.message}
+            error={errors.guarantor_email?.message}
           />
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-500">Status:</span>

@@ -4,6 +4,8 @@ import { UseFormRegister, FieldErrors } from "react-hook-form";
 import { LoanFormData } from "./types";
 import { CustomInput } from "@/components/utility/form/custom-input";
 import { Button } from "@/components/ui/button";
+import { FileInput } from "@/components/utility/form/custom-file";
+import { CustomTextarea } from "@/components/utility/form/custome-textarea";
 
 type Props = {
   register: UseFormRegister<LoanFormData>;
@@ -35,9 +37,9 @@ export default function StepLoanDetails({
             placeholder="Enter amount"
             type="number"
             step="0.01"
-            error={errors.loan_amount?.message}
+            error={errors.amount?.message}
           />
-          {!errors.loan_amount && (
+          {!errors.amount && (
             <p className="text-xs text-muted-foreground px-1">
               Maximum allowed: ₦{maxAmount.toLocaleString()}
             </p>
@@ -51,9 +53,9 @@ export default function StepLoanDetails({
             label="Repayment Period (months)"
             placeholder="Enter period"
             type="number"
-            error={errors.repayment_period?.message}
+            error={errors.duration_month?.message}
           />
-          {!errors.repayment_period && (
+          {!errors.duration_month && (
             <p className="text-xs text-muted-foreground px-1">
               Maximum allowed: {maxDuration} months
             </p>
@@ -75,7 +77,7 @@ export default function StepLoanDetails({
           label="Bank Account Number"
           placeholder="Enter 10-digit account number"
           type="text"
-          error={errors.bank_account_number?.message}
+          error={errors.bank_account?.message}
         />
         <CustomInput
           register={register}
@@ -92,6 +94,27 @@ export default function StepLoanDetails({
           placeholder="Enter Gross Salary Amount"
           type="number"
           error={errors.gross_salary?.message}
+        />
+        <CustomInput
+          register={register}
+          inputname="monthly_saving_during_repayments"
+          label="Monthly Saving During Repayments"
+          placeholder="Enter monthly saving amount"
+          type="number"
+          error={errors.monthly_saving_during_repayments?.message}
+        />
+        <CustomTextarea
+          register={register}
+          inputname="purpose"
+          label="Purpose for This Loan"
+          placeholder="Enter Gross Salary Amount"
+          error={errors.purpose?.message}
+        />
+        <FileInput
+          register={register}
+          inputname="pay_slip"
+          label="Upload ur Pay Slip"
+          error={errors.pay_slip?.message}
         />
       </div>
 
