@@ -5,7 +5,12 @@ import {
   TableColumn,
 } from "@/components/shared/table/dyanmic-table";
 import { useRouter } from "next/navigation";
-
+import { allGuarantorRequest } from "@/lib/api/loan/gaurantor";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { TableSkeleton } from "@/components/shared/skeleton/skeleton-table";
+import { useState } from "react";
+import { LaravelPaginationMeta } from "@/components/shared/table/laravel-pagination-type";
 interface GuarantorRequest {
   id: number | string;
   fullname: string;
@@ -83,6 +88,30 @@ const guarantorRequests: GuarantorRequest[] = [
 ];
 
 export default function GuarantorsRequestsTable() {
+  const [page, setPage] = useState(1);
+  const {
+    data: Request,
+    isLoading,
+    error,
+    isSuccess,
+  } = useQuery({
+    queryKey: ["GuarantorRequest", page], // page in key = auto refetch on change
+    queryFn: () => allGuarantorRequest(page),
+    placeholderData: keepPreviousData,
+  });
+
+  const meta: LaravelPaginationMeta | undefined =
+    Request?.data.current_page != null
+      ? {
+          current_page: Request.data.current_page,
+          last_page: Request.data.last_page,
+          per_page: Request.data.per_page,
+          total: Request.data.total,
+          from: Request.data.from ?? null,
+          to: Request.data.to ?? null,
+        }
+      : undefined;
+
   const Router = useRouter();
   const GuarantorRequestActions: TableAction<GuarantorRequest>[] = [
     {
@@ -95,13 +124,22 @@ export default function GuarantorsRequestsTable() {
   ];
   return (
     <div>
-      <DynamicTable
-        title="Loan Guarantor Request"
-        columns={GuarantorRequestColumns}
-        actions={GuarantorRequestActions}
-        data={guarantorRequests}
-        sortable
-      />
+      {isLoading && <TableSkeleton />}
+      {isSuccess ? (
+        Request && (
+          <div>
+            <DynamicTable
+              title="Loan Guarantor Request"
+              columns={GuarantorRequestColumns}
+              actions={GuarantorRequestActions}
+              data={guarantorRequests}
+              sortable
+            />
+          </div>
+        )
+      ) : (
+        <div>{error?.message}</div>
+      )}
     </div>
   );
 }

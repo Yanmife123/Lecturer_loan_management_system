@@ -17,6 +17,7 @@ import { Bell, LogOut, Settings, ChevronLeft, PanelLeft } from "lucide-react";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 function HeaderCollapseButton() {
   const { toggleSidebar, state } = useSidebar();
@@ -43,9 +44,11 @@ function HeaderCollapseButton() {
 export function Header() {
   const { user, fullName, loading } = useUser();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const handleLogOut = async () => {
     Cookies.remove("token");
     Cookies.remove("user");
+    queryClient.clear();
     toast.success("Logout Sucessfully ");
     router.push("/login");
   };
