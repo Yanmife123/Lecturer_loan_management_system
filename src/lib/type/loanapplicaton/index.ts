@@ -15,6 +15,7 @@ export interface User {
   phone_number: string;
   created_at: string;
   updated_at: string;
+  member_info: MemberInfo;
 }
 
 export interface LoanType {
@@ -27,6 +28,27 @@ export interface LoanType {
   collection_period: string;
   submission_period: string;
   is_active: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MemberInfo {
+  id: number;
+  user_id: number;
+  faculty: string;
+  department: string;
+  date_of_first_appointment: string;
+  designation: string;
+  salary_scale_level: string;
+  salary_scale_step: string;
+  staff_file_no: string;
+  signature_path: string;
+  monthly_saving_amount: string;
+  nok_full_name: string;
+  nok_relationship: string;
+  nok_phone: string;
+  nok_email: string;
+  nok_address: string;
   created_at: string;
   updated_at: string;
 }
@@ -49,7 +71,7 @@ export interface LoanApplicationResponse {
   secretary_comment: string | null;
   scretary_id: number | null;
   guarantor_id: number;
-  guarantor_approval: boolean | number | null;
+  guarantor_approval: boolean | null | number;
   guarantor_approval_at: string | null;
   created_at: string;
   updated_at: string;

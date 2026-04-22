@@ -11,79 +11,87 @@ import { toast } from "sonner";
 import { TableSkeleton } from "@/components/shared/skeleton/skeleton-table";
 import { useState } from "react";
 import { LaravelPaginationMeta } from "@/components/shared/table/laravel-pagination-type";
-interface GuarantorRequest {
-  id: number | string;
-  fullname: string;
-  amount: string | number;
-  type: string;
-  period: string;
-  interest: string;
-}
+import { LoanApplicationResponse } from "@/lib/type/loanapplicaton";
 
-const GuarantorRequestColumns: TableColumn<GuarantorRequest>[] = [
-  { key: "fullname", label: "Full Name", sortable: true },
+const getStatusDetails = (status: number | boolean | null | undefined) => {
+  // Check for Accepted (1 or true)
+  if (status === 1 || status === true) {
+    return {
+      label: "Accepted",
+      classes: "bg-green-100 text-green-700 border-green-200",
+    };
+  }
+
+  // Check for Declined (0 or false)
+  // We use !== null because 0 is falsy, but so is null. We want to distinguish them.
+  if (status === 0 || status === false) {
+    return {
+      label: "Declined",
+      classes: "bg-red-100 text-red-700 border-red-200",
+    };
+  }
+
+  // Fallback for null or undefined
+  return {
+    label: "Pending",
+    classes: "bg-amber-100 text-amber-700 border-amber-200",
+  };
+};
+
+const GuarantorRequestColumns: TableColumn<LoanApplicationResponse>[] = [
+  {
+    key: "user",
+    label: "Full Name",
+    id: "Surname",
+    render(value, row) {
+      return `${row.user.prefix} ${row.user.surname} ${row.user.other_names}`;
+    },
+  },
   { key: "amount", label: "Amount", sortable: true },
-  { key: "type", label: "Loan Type", sortable: true },
-  { key: "period", label: "Loan Period", sortable: true },
-  { key: "interest", label: "Interest", sortable: true },
-];
-
-const guarantorRequests: GuarantorRequest[] = [
   {
-    id: "REQ-001",
-    fullname: "Dr. Adeyemi Johnson Oluwaseun",
-    amount: 500000,
-    type: "Normal Loan",
-    period: "24 months",
-    interest: "1% reducing balance",
+    key: "loan_type",
+    label: "Loan Type",
+    id: "loan_name",
+    sortable: true,
+    render(value, row) {
+      return `${row.loan_type.name}`;
+    },
   },
   {
-    id: "REQ-002",
-    fullname: "Prof. Sarah Chinedu",
-    amount: 250000,
-    type: "Emergency Loan",
-    period: "12 months",
-    interest: "10% flat",
+    key: "duration_month",
+    label: "Loan Period",
+    sortable: true,
+    render(value, row) {
+      return `${row.duration_month} months`;
+    },
   },
   {
-    id: "REQ-003",
-    fullname: "Mr. Babatunde Raji",
-    amount: 150000,
-    type: "Commodity Loan",
-    period: "12 months",
-    interest: "10% flat",
+    key: "guarantor_approval",
+    label: "Guarantor Status",
+    render(value, row) {
+      const statusDetails = getStatusDetails(row.guarantor_approval);
+      return (
+        <span
+          className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusDetails.classes}`}
+        >
+          {statusDetails.label}
+        </span>
+      );
+    },
   },
   {
-    id: "REQ-004",
-    fullname: "Dr. Elizabeth Amadi",
-    amount: 850000,
-    type: "Enhancement Loan",
-    period: "10 months",
-    interest: "10% flat",
-  },
-  {
-    id: "REQ-005",
-    fullname: "Engr. Victor Okafor",
-    amount: 80000,
-    type: "Soft Loan",
-    period: "5 months",
-    interest: "5% flat",
-  },
-  {
-    id: "REQ-006",
-    fullname: "Dr. Funmilayo Bello",
-    amount: 1200000,
-    type: "Normal Loan",
-    period: "36 months",
-    interest: "1% reducing balance",
-  },
-  {
-    id: "REQ-007",
-    fullname: "Mrs. Grace Temitope",
-    amount: 300000,
-    type: "Emergency Loan",
-    period: "12 months",
-    interest: "10% flat",
+    key: "loan_type",
+    label: "Interest",
+    id: "interest",
+    sortable: true,
+    render(value, row) {
+      return (
+        parseInt(row.loan_type.interest_rate) +
+        "%" +
+        " " +
+        row.loan_type.interest_type
+      );
+    },
   },
 ];
 
@@ -113,7 +121,7 @@ export default function GuarantorsRequestsTable() {
       : undefined;
 
   const Router = useRouter();
-  const GuarantorRequestActions: TableAction<GuarantorRequest>[] = [
+  const GuarantorRequestActions: TableAction<LoanApplicationResponse>[] = [
     {
       label: "View Details",
       onClick: (row) => {
@@ -132,7 +140,9 @@ export default function GuarantorsRequestsTable() {
               title="Loan Guarantor Request"
               columns={GuarantorRequestColumns}
               actions={GuarantorRequestActions}
-              data={guarantorRequests}
+              data={Request.data.data}
+              pagination={meta ?? undefined}
+              onPageChange={(p) => setPage(p)}
               sortable
             />
           </div>
