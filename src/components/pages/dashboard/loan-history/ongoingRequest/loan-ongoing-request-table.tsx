@@ -143,9 +143,10 @@ export default function LoanOngoingRequestTable() {
               columns={LoanHistoryColumn}
               data={LoansHistory.data.data}
               actions={LoanHistoryActions}
+              loading={isLoading}
               pagination={meta ?? undefined}
               onPageChange={(p) => setPage(p)}
-              emptyMessage="No Loan History"
+              emptyMessage="No Ongoing Request Loan"
             />
           </div>
         )
