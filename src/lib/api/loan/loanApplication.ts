@@ -7,3 +7,10 @@ export async function CreateLoanApplication(formData: FormData) {
   });
   return axiosResponseHandle(response);
 }
+
+export async function getallMyLoan(page = 1) {
+  const response = await Instance1.get("/loans", {
+    params: { page },
+  });
+  return axiosResponseHandle(response);
+}
