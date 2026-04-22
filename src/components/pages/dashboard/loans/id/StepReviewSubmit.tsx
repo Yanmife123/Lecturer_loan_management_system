@@ -4,7 +4,7 @@ import { LoanFormData } from "./types";
 import { Button } from "@/components/ui/button";
 
 type Props = {
-  data: Partial<LoanFormData>;
+  data: LoanFormData;
   onSubmit: () => void;
   onBack: () => void;
   isPending: boolean;
@@ -47,19 +47,19 @@ export default function StepReviewSubmit({
           <ReviewRow
             label="Amount"
             value={
-              data.loan_amount
-                ? `₦${Number(data.loan_amount).toLocaleString()}`
-                : "—"
+              data.amount ? `₦${Number(data.amount).toLocaleString()}` : "—"
             }
           />
           <ReviewRow
             label="Period"
-            value={
-              data.repayment_period ? `${data.repayment_period} months` : "—"
-            }
+            value={data.duration_month ? `${data.duration_month} months` : "—"}
           />
           <ReviewRow label="Bank" value={data.bank_name ?? "—"} />
-          <ReviewRow label="Account" value={data.bank_account_number ?? "—"} />
+          <ReviewRow label="Account" value={data.bank_account ?? "—"} />
+          <ReviewRow
+            label="Monthly Saving During Repayment"
+            value={data.monthly_saving_during_repayments ?? "—"}
+          />
         </div>
       </div>
 
@@ -69,8 +69,7 @@ export default function StepReviewSubmit({
           <p className="text-sm font-medium text-[#1B2E5E]">Guarantors</p>
         </div>
         <div className="px-4 py-2 divide-y divide-gray-100">
-          <ReviewRow label="Guarantor 1" value={data.guarantor1_email ?? "—"} />
-          <ReviewRow label="Guarantor 2" value={data.guarantor2_email ?? "—"} />
+          <ReviewRow label="Guarantor 1" value={data.guarantor_email ?? "—"} />
         </div>
       </div>
 

@@ -39,11 +39,11 @@ export default function StepGuarantors({
           <p className="text-sm font-medium text-[#1B2E5E]">Guarantor 1</p>
           <CustomInput
             register={register}
-            inputname="guarantor1_email"
+            inputname="guarantor_email"
             label="Email Address"
             placeholder="guarantor1@example.com"
             type="email"
-            error={errors.guarantor1_email?.message}
+            error={errors.guarantor_email?.message}
           />
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-500">Status:</span>
@@ -56,23 +56,6 @@ export default function StepGuarantors({
         <div className="border-t border-gray-100" />
 
         {/* Guarantor 2 */}
-        <div className="space-y-3">
-          <p className="text-sm font-medium text-[#1B2E5E]">Guarantor 2</p>
-          <CustomInput
-            register={register}
-            inputname="guarantor2_email"
-            label="Email Address"
-            placeholder="guarantor2@example.com"
-            type="email"
-            error={errors.guarantor2_email?.message}
-          />
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">Status:</span>
-            <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 text-xs font-normal">
-              Pending
-            </Badge>
-          </div>
-        </div>
       </div>
 
       <div className="flex gap-3">

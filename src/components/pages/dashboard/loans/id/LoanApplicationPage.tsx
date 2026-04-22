@@ -19,57 +19,99 @@ import StepSalaryDeduction from "./StepSalaryDeduction";
 import StepGuarantors from "./StepGuarantors";
 import StepReviewSubmit from "./StepReviewSubmit";
 import SuccessModal from "./SuccessModal";
+import { useQuery } from "@tanstack/react-query";
+import { SingleLoan } from "@/lib/api/loan/all_loan_type";
+import { LoanApplicationSkeleton } from "@/components/shared/skeleton/skeleton-card";
+import { PageHeader } from "@/components/shared/header/page-header2";
+import { Instance1 } from "@/lib/axios";
+import { toast } from "sonner";
+import { CreateLoanApplication } from "@/lib/api/loan/loanApplication";
 
-// ─── Validation Schemas per step ────────────────────────────────────────────
+const fileListSchema = z.custom<FileList>(
+  (val) => typeof window === "undefined" || val instanceof FileList,
+  { message: "Invalid file input" },
+);
 
-const step1Schema = z.object({
-  loan_amount: z.coerce
-    .number({ invalid_type_error: "Enter a valid amount" })
-    .positive("Amount must be greater than 0"),
-  repayment_period: z.coerce
-    .number({ invalid_type_error: "Enter a valid period" })
-    .int()
-    .positive("Period must be greater than 0"),
-  bank_name: z.string().min(2, "Bank name is required"),
-  bank_account_number: z
-    .string()
-    .min(10, "Account number must be at least 10 digits")
-    .max(10, "Account number must be 10 digits"),
-});
+const MAX_FILE_SIZE = 2048 * 1024; // 2MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png"];
+const createStep1Schema = (maxAmount: number, maxDuration: number) =>
+  z.object({
+    amount: z.coerce
+      .number({ invalid_type_error: "Enter a valid amount" })
+      .positive("Amount must be greater than 0")
+      .max(maxAmount, `Amount cannot exceed ₦${maxAmount.toLocaleString()}`),
+    duration_month: z.coerce
+      .number({ invalid_type_error: "Enter a valid period" })
+      .int()
+      .positive("Period must be greater than 0")
+      .max(maxDuration, `Duration cannot exceed ${maxDuration} months`),
+    bank_name: z.string().min(2, "Bank name is required"),
+    bank_account: z
+      .string()
+      .min(10, "Account number must be at least 10 digits")
+      .max(10, "Account number must be 10 digits"),
+    net_salary: z.coerce
+      .number({ invalid_type_error: "Enter a valid amount" })
+      .positive("Amount must be greater than 0"),
+    gross_salary: z.coerce
+      .number({ invalid_type_error: "Enter a valid amount" })
+      .positive("Amount must be greater than 0"),
+    monthly_saving_during_repayments: z.coerce
+      .number({ invalid_type_error: "Enter a valid amount" })
+      .positive("Amount must be greater than 0"),
+    purpose: z.string().min(2, "Purpose is required"),
+    pay_slip: fileListSchema
+      .refine((files) => files.length > 0, "Pay Slip is required")
+      .refine(
+        (files) => files[0]?.size <= MAX_FILE_SIZE,
+        "Max file size is 2MB",
+      )
+      .refine(
+        (files) => ACCEPTED_IMAGE_TYPES.includes(files[0]?.type),
+        "Only .jpg and .png files are accepted",
+      ),
+  });
 
 const step2Schema = z.object({
-  borrower_signature: z.string().min(1, "Signature is required"),
+  // borrower_signature: z.string().min(1, "Signature is required"),
 });
 
 const step3Schema = z.object({
-  salary_deduction_signature: z.string().min(1, "Signature is required"),
+  // salary_deduction_signature: z.string().min(1, "Signature is required"),
 });
 
 const step4Schema = z.object({
-  guarantor1_email: z.string().email("Enter a valid email"),
-  guarantor2_email: z.string().email("Enter a valid email"),
+  guarantor_email: z.string().email("Enter a valid email"),
 });
-
-const schemaMap: Record<LoanStep, z.ZodTypeAny> = {
-  1: step1Schema,
-  2: step2Schema,
-  3: step3Schema,
-  4: step4Schema,
-  5: z.object({}),
-};
-
-// ─── Props ────────────────────────────────────────────────────────────────────
-
-type Props = {
-  member: Member;
-};
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export default function LoanApplicationPage() {
+export default function LoanApplicationPage({ id }: { id: string }) {
   const router = useRouter();
   const [step, setStep] = useState<LoanStep>(1);
   const [submitted, setSubmitted] = useState(false);
+  const { fullName, loading } = useUser();
+
+  const {
+    data: Loan,
+    isLoading,
+    isSuccess,
+  } = useQuery({
+    queryKey: ["SingleLoan", id],
+    queryFn: () => SingleLoan(id),
+  });
+
+  // ─── Derive constraints from fetched loan ──────────────────────────────────
+  const maxAmount: number = Loan?.data?.max_amount ?? Infinity;
+  const maxDuration: number = Loan?.data?.max_duration_months ?? Infinity;
+
+  const schemaMap: Record<LoanStep, z.ZodTypeAny> = {
+    1: createStep1Schema(maxAmount, maxDuration),
+    2: step2Schema,
+    3: step3Schema,
+    4: step4Schema,
+    5: z.object({}),
+  };
 
   const {
     register,
@@ -86,35 +128,44 @@ export default function LoanApplicationPage() {
   // ─── Submit mutation ──────────────────────────────────────────────────────
   const { mutate: submitLoan, isPending } = useMutation({
     mutationFn: async (data: LoanFormData) => {
+      console.log(data);
       const formData = new FormData();
-      formData.append("loan_amount", String(data.loan_amount));
-      formData.append("repayment_period", String(data.repayment_period));
+      formData.append("amount", String(data.amount));
+      formData.append("duration_month", String(data.duration_month));
       formData.append("bank_name", data.bank_name);
-      formData.append("bank_account_number", data.bank_account_number);
-      formData.append("borrower_signature", data.borrower_signature);
+      formData.append("bank_account", data.bank_account);
+      formData.append("net_salary", String(data.net_salary));
+      formData.append("gross_salary", String(data.gross_salary));
+      formData.append("purpose", data.purpose);
       formData.append(
-        "salary_deduction_signature",
-        data.salary_deduction_signature,
+        "monthly_saving_during_repayments",
+        String(data.monthly_saving_during_repayments),
       );
-      formData.append("guarantor1_email", data.guarantor1_email);
-      formData.append("guarantor2_email", data.guarantor2_email);
-
-      if (data.passport_photo_1?.[0]) {
-        formData.append("passport_photo_1", data.passport_photo_1[0]);
+      if (data.pay_slip?.[0]) {
+        formData.append("pay_slip", data.pay_slip[0]);
       }
-      if (data.passport_photo_2?.[0]) {
-        formData.append("passport_photo_2", data.passport_photo_2[0]);
-      }
+      // formData.append("borrower_signature", data.borrower_signature);
+      // formData.append(
+      //   "salary_deduction_signature",
+      //   // data.salary_deduction_signature,
+      // );
+      formData.append("loan_type_id", id);
+      formData.append("guarantor_email", data.guarantor_email);
 
-      return axios.post("/api/loans/apply", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      // console.log(formData.getAll);
+
+      return CreateLoanApplication(formData);
     },
-    onSuccess: () => setSubmitted(true),
+    onSuccess: () => {
+      setSubmitted(true);
+    },
     onError: (error) => {
       console.error("Loan submission failed:", error);
+      toast.error("Loan submission failed:", { description: error.message });
     },
   });
+
+  const formValues = getValues();
 
   // ─── Step navigation ──────────────────────────────────────────────────────
   const goNext = async () => {
@@ -125,95 +176,91 @@ export default function LoanApplicationPage() {
   const goBack = () =>
     setStep((prev) => (prev > 1 ? ((prev - 1) as LoanStep) : prev));
 
-  const onFinalSubmit = handleSubmit((data) => submitLoan(data));
-
-  const formValues = getValues();
+  const onFinalSubmit = handleSubmit(() => submitLoan(formValues));
 
   // ─── Render ───────────────────────────────────────────────────────────────
   if (submitted) return <SuccessModal />;
 
-  const { fullName, loading } = useUser();
   return (
-    <div className="min-h-screen bg-[#F1F3F5] font-sans">
-      <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
-        {/* Header */}
-        <div>
-          <button
-            onClick={() => router.back()}
-            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#1B2E5E] transition-colors mb-4"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </button>
-          <h1 className="text-2xl font-semibold text-[#1B2E5E]">
-            Apply for Loan
-          </h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            Complete the application process
-          </p>
+    <div className="font-sans">
+      {isLoading && (
+        <div className="flex justify-center">
+          <LoanApplicationSkeleton />
         </div>
+      )}
+      {!isLoading && (
+        <div className="max-w-2xl mx-auto space-y-6">
+          <PageHeader
+            title={`Apply for ${Loan.data.name}`}
+            description="Complete the application process"
+            breadcrumbs={[
+              { label: "Dashboard", href: "/dashboard" },
+              { label: "All Loans", href: "/dashboard/loans" },
+              { label: Loan.data.name },
+            ]}
+          />
 
-        {/* Step Indicator */}
-        <Card className="p-5">
-          <LoanStepIndicator currentStep={step} />
-        </Card>
+          {/* Step Indicator */}
+          <Card className="p-5">
+            <LoanStepIndicator currentStep={step} />
+          </Card>
 
-        {/* Step Content */}
-        <Card className="p-6 md:p-8">
-          <form onSubmit={(e) => e.preventDefault()}>
-            {step === 1 && (
-              <StepLoanDetails
-                register={register}
-                errors={errors}
-                onNext={goNext}
-              />
-            )}
+          {/* Step Content */}
+          <Card className="p-6 md:p-8">
+            <form onSubmit={(e) => e.preventDefault()}>
+              {step === 1 && (
+                <StepLoanDetails
+                  register={register}
+                  errors={errors}
+                  onNext={goNext}
+                  maxAmount={maxAmount}
+                  maxDuration={maxDuration}
+                />
+              )}
 
-            {step === 2 && !loading && fullName && (
-              <StepLoanBond
-                control={control}
-                errors={errors}
-                onNext={goNext}
-                onBack={goBack}
-                fullname={fullName}
-                loanAmount={formValues.loan_amount}
-                repaymentPeriod={formValues.repayment_period}
-              />
-            )}
+              {step === 2 && !loading && fullName && (
+                <StepLoanBond
+                  onNext={goNext}
+                  onBack={goBack}
+                  fullname={fullName}
+                  loanAmount={formValues.amount}
+                  repaymentPeriod={formValues.duration_month}
+                />
+              )}
 
-            {step === 3 && (
-              <StepSalaryDeduction
-                control={control}
-                register={register}
-                errors={errors}
-                onNext={goNext}
-                onBack={goBack}
-                // member={user ? user}
-                loanAmount={formValues.loan_amount}
-              />
-            )}
+              {step === 3 && (
+                <StepSalaryDeduction
+                  // control={control}
+                  // register={register}
+                  // errors={errors}
+                  onNext={goNext}
+                  onBack={goBack}
+                  loanAmount={formValues.amount}
+                />
+              )}
 
-            {step === 4 && (
-              <StepGuarantors
-                register={register}
-                errors={errors}
-                onNext={goNext}
-                onBack={goBack}
-                isPending={isPending}
-              />
-            )}
+              {step === 4 && (
+                <StepGuarantors
+                  register={register}
+                  errors={errors}
+                  onNext={goNext}
+                  onBack={goBack}
+                  isPending={isPending}
+                />
+              )}
 
-            {step === 5 && (
-              <StepReviewSubmit
-                data={formValues}
-                onSubmit={onFinalSubmit}
-                onBack={goBack}
-                isPending={isPending}
-              />
-            )}
-          </form>
-        </Card>
-      </div>
+              {step === 5 && (
+                <StepReviewSubmit
+                  data={formValues}
+                  onSubmit={onFinalSubmit}
+                  onBack={goBack}
+                  isPending={isPending}
+                />
+              )}
+            </form>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

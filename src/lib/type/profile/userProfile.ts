@@ -54,4 +54,6 @@ export interface Member {
   updated_at: string;
   member_info: MemberInfo;
   membership_detail: MembershipDetail;
+  is_loan_eligible: boolean; // this is for only Cookies caling ohh
+  months_as_member: number; // this is for only Cookies caling ohh
 }

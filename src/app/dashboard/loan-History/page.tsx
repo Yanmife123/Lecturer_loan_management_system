@@ -1,7 +1,7 @@
-import LaonHistoryTable from "@/components/pages/dashboard/loan-history/loan-history-table";
 import { StatCard } from "@/components/pages/dashboard/statsCard";
 import { PiggyBank, FileText, CheckCircle, AlertCircle } from "lucide-react";
-
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 export default function DashboardLoanHistory() {
   return (
     <div className="space-y-6">
@@ -31,9 +31,19 @@ export default function DashboardLoanHistory() {
           iconVariant="yellow"
         />
       </div>
-      <div>
-        <LaonHistoryTable />
+      <div className="space-y-3">
+        <div className="flex justify-end items-center gap-3 flex-wrap">
+          <div className="grid  grid-cols-1 gap-3 max-md:w-full">
+            <Button variant="outline">
+              <Link href="/dashboard/loan-History/ongoing-request">
+                Ongoing Pending Loan Requests
+              </Link>
+            </Button>
+          </div>
+        </div>
+        // Table will be here
       </div>
+      <div>{/* <LaonHistoryTable /> */}</div>
     </div>
   );
 }

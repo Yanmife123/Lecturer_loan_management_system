@@ -8,8 +8,6 @@ import SignaturePad from "./SignaturePad";
 import { Member } from "@/lib/type/profile/userProfile";
 
 type Props = {
-  control: Control<LoanFormData>;
-  errors: FieldErrors<LoanFormData>;
   onNext: () => void;
   onBack: () => void;
   fullname: string;
@@ -18,8 +16,6 @@ type Props = {
 };
 
 export default function StepLoanBond({
-  control,
-  errors,
   onNext,
   onBack,
   fullname,
@@ -73,20 +69,7 @@ export default function StepLoanBond({
         </div>
 
         {/* Signature */}
-        <div className="pt-2">
-          <Controller
-            name="borrower_signature"
-            control={control}
-            render={({ field }) => (
-              <SignaturePad
-                label="Borrower's Signature"
-                value={field.value}
-                onChange={field.onChange}
-                error={errors.borrower_signature?.message}
-              />
-            )}
-          />
-        </div>
+        <div></div>
       </div>
 
       <div className="flex gap-3">

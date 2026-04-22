@@ -24,3 +24,8 @@ export async function allLoanType() {
   const response = await Instance1.get("/loan-types");
   return axiosResponseHandle(response);
 }
+
+export async function SingleLoan(id: string) {
+  const response = await Instance1.get(`/loan-types/${id}`);
+  return axiosResponseHandle(response);
+}

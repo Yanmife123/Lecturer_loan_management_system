@@ -9,8 +9,8 @@ export default async function SingleLoanApply({
   const { id } = await params;
   return (
     <div className="space-y-6">
-      <PageHeader title={`Loan ${id}`} />
-      <LoanApplicationPage />
+      {/* <PageHeader title={`Apply for Loan`} /> */}
+      <LoanApplicationPage id={id} />
     </div>
   );
 }

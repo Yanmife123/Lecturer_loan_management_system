@@ -5,7 +5,7 @@ import {
   TableAction,
 } from "@/components/shared/table/dyanmic-table";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { AllRequest } from "@/lib/api/loan/adminLoans";
+import { AllRequest, AllReviews } from "@/lib/api/loan/adminLoans";
 import { TableSkeleton } from "@/components/shared/skeleton/skeleton-table";
 import { useState } from "react";
 import { LaravelPaginationMeta } from "@/components/shared/table/laravel-pagination-type";
@@ -13,6 +13,7 @@ import { LaravelPaginationMeta } from "@/components/shared/table/laravel-paginat
 import { LoanApplication } from "@/lib/type/admin/dashboard/loan-requests/pendingRequest";
 import { formatDate } from "@/components/utility/functions/data-fn";
 import { useRouter } from "next/navigation";
+import LoanStatusBadge from "@/components/shared/LoanStatus";
 
 const getStatusDetails = (status: number | boolean | null | undefined) => {
   // Check for Accepted (1 or true)
@@ -39,7 +40,7 @@ const getStatusDetails = (status: number | boolean | null | undefined) => {
   };
 };
 
-export function LoanRequestsTable() {
+export function LoanReviewsTable() {
   const [page, setPage] = useState(1);
   const router = useRouter();
   const {
@@ -49,7 +50,7 @@ export function LoanRequestsTable() {
     isSuccess,
   } = useQuery({
     queryKey: ["LoanRequestsPending", page], // page in key = auto refetch on change
-    queryFn: () => AllRequest(page),
+    queryFn: () => AllReviews(page),
     placeholderData: keepPreviousData,
   });
 
@@ -115,13 +116,20 @@ export function LoanRequestsTable() {
         );
       },
     },
+    {
+      key: "status",
+      label: "Loan Status",
+      render(value, row) {
+        return <LoanStatusBadge status={row.status} />;
+      },
+    },
   ];
   const Actions: TableAction<LoanApplication>[] = [
     {
       label: "View Details",
       onClick: (row) => {
         // Handle approve action
-        router.push(`/admin/dashboard/loans-requests/${row.id}`);
+        router.push(`/admin/dashboard/loans-requests/reviews/${row.id}`);
       },
     },
   ];

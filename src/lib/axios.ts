@@ -73,6 +73,14 @@ export const Instance1 = axios.create({
   },
 });
 
+export const FileInstance1 = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_BASE_API_URL,
+  headers: {
+    "Content-Type": "multipart/form-data",
+    Accept: "application/json",
+  },
+});
+
 Instance1.interceptors.response.use(
   (response) => {
     return response;
@@ -92,6 +100,32 @@ Instance1.interceptors.response.use(
 );
 
 Instance1.interceptors.request.use((config) => {
+  const token = Cookies.get("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+FileInstance1.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error.response) {
+      return Promise.reject(
+        new Error(
+          error.response.data?.message ||
+            `Request failed with status ${error.response.status}`,
+        ),
+      );
+    }
+
+    return Promise.reject(error);
+  },
+);
+
+FileInstance1.interceptors.request.use((config) => {
   const token = Cookies.get("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
