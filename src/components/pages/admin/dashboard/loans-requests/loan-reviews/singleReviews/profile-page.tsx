@@ -9,17 +9,18 @@ import { TrendingUp, Wallet } from "lucide-react";
 // import Link from "next/link";
 import GuarantorInfo from "./guarantor-info";
 import ProfileInfoSkeleton from "@/components/shared/skeleton/profile/profile-info-skeleton";
-import { SingleRequest } from "@/lib/api/loan/adminLoans";
+import { ChairmanApprove, SingleRequest } from "@/lib/api/loan/adminLoans";
 // import { LoanApplication } from "@/lib/type/admin/dashboard/loan-requests/pendingRequest";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import LoanInfo from "./loan-detals";
 // import { formatDate } from "@/components/utility/functions/data-fn";
 import { Button } from "@/components/ui/button";
-import { SecretaryApprove } from "@/lib/api/loan/adminLoans";
+
 import { toast } from "sonner";
 import { ConfirmModal } from "@/components/shared/Modal";
 import { useState } from "react";
 import { useRole } from "@/lib/hooks/useRole";
+import { Rowdies } from "next/font/google";
 
 export default function AdminLoanRequestReviewsProfile({ id }: { id: string }) {
   const [openApprove, setOpenApprove] = useState(false);
@@ -36,12 +37,12 @@ export default function AdminLoanRequestReviewsProfile({ id }: { id: string }) {
   });
 
   const acceptRequest = useMutation({
-    mutationFn: SecretaryApprove,
+    mutationFn: ChairmanApprove,
     onSuccess: (data) => {
       toast.success("Approved Sucessfully");
       setOpenApprove(false);
-      queryClient.invalidateQueries({ queryKey: ["SinglePendingRequest", id] });
-      queryClient.invalidateQueries({ queryKey: ["LoanRequestsPending"] });
+      queryClient.invalidateQueries({ queryKey: ["SingleReviewsRequest", id] });
+      queryClient.invalidateQueries({ queryKey: ["LoanRequestsReviews"] });
     },
     onError: (error) => {
       toast.error("Failed to Approve application", {
@@ -50,7 +51,7 @@ export default function AdminLoanRequestReviewsProfile({ id }: { id: string }) {
     },
   });
   const handleConfirm = () => {
-    // acceptRequest.mutate(id);
+    acceptRequest.mutate(id);
     // console.log("Clicking");
   };
   return (
@@ -119,20 +120,21 @@ export default function AdminLoanRequestReviewsProfile({ id }: { id: string }) {
                     </div>
                   </Card>
                 </div>
-                {hasRole("admin", "chairman") && (
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <Button
-                      onClick={() => {
-                        setOpenApprove(true);
-                      }}
-                    >
-                      Approve this Request{" "}
-                    </Button>
-                    <Button variant={"destructive"}>
-                      Decline this Request
-                    </Button>
-                  </div>
-                )}
+                {hasRole("admin", "chairman") &&
+                  Data.data.loan_approval.stage === "chairman" && (
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <Button
+                        onClick={() => {
+                          setOpenApprove(true);
+                        }}
+                      >
+                        Approve this Request{" "}
+                      </Button>
+                      <Button variant={"destructive"}>
+                        Decline this Request
+                      </Button>
+                    </div>
+                  )}
               </div>
             </main>
             <ConfirmModal

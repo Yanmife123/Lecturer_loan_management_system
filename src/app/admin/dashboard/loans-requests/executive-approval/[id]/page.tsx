@@ -1,7 +1,7 @@
-import AdminLoanRequestProfile from "@/components/pages/admin/dashboard/loans-requests/singleLoanRequestPending/member-single/profile-page";
 import { PageHeader } from "@/components/shared/header/page-header2";
+import AdminLoanRequestReviewsExecutiveProfile from "@/components/pages/admin/dashboard/loans-requests/executives-approval/single/profile-page";
 
-export default async function SingleLoanRequestPending({
+export default async function SingleLoanRequestReviewsExecutive({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -10,7 +10,7 @@ export default async function SingleLoanRequestPending({
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Loan Pending Request Info"
+        title="Executive Loan Approval Info"
         breadcrumbs={[
           {
             label: "Dashboard",
@@ -21,11 +21,15 @@ export default async function SingleLoanRequestPending({
             href: "/admin/dashboard/loans-requests",
           },
           {
-            label: "Loan Pending Request Info",
+            label: "Exectives Loan Approval",
+            href: "/admin/dashboard/loans-requests/executive-approval",
+          },
+          {
+            label: "Single Executive Loan Review Info",
           },
         ]}
       />
-      <AdminLoanRequestProfile id={id} />
+      <AdminLoanRequestReviewsExecutiveProfile id={id} />
     </div>
   );
 }

@@ -7,6 +7,19 @@ export default function LoanRequestReview() {
       <PageHeader
         title="Loan Reviews"
         description="These are loans that needs to be approve by Chairman"
+        breadcrumbs={[
+          {
+            label: "Dashboard",
+            href: "/admin/dashboard",
+          },
+          {
+            label: "Loan Requests Pending",
+            href: "/admin/dashboard/loans-requests",
+          },
+          {
+            label: "Loan Reviews Request",
+          },
+        ]}
       />
       <LoanReviewsTable />
     </div>

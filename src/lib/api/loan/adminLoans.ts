@@ -14,6 +14,12 @@ export async function AllReviews(page = 1) {
   });
   return axiosResponseHandle(response);
 }
+export async function AllReviewsExcutive(page = 1) {
+  const response = await Instance1.get("/admin/loans/executives", {
+    params: { page },
+  });
+  return axiosResponseHandle(response);
+}
 
 export async function SingleRequest(id: string) {
   const response = await Instance1.get(`/admin/loans/${id}`);

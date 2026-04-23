@@ -9,20 +9,29 @@ import { TrendingUp, Wallet } from "lucide-react";
 // import Link from "next/link";
 import GuarantorInfo from "./guarantor-info";
 import ProfileInfoSkeleton from "@/components/shared/skeleton/profile/profile-info-skeleton";
-import { SingleRequest } from "@/lib/api/loan/adminLoans";
+import {
+  GenSecApprove,
+  PresidentApprove,
+  SingleRequest,
+} from "@/lib/api/loan/adminLoans";
 // import { LoanApplication } from "@/lib/type/admin/dashboard/loan-requests/pendingRequest";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import LoanInfo from "./loan-detals";
 // import { formatDate } from "@/components/utility/functions/data-fn";
 import { Button } from "@/components/ui/button";
-import { SecretaryApprove } from "@/lib/api/loan/adminLoans";
+
 import { toast } from "sonner";
 import { ConfirmModal } from "@/components/shared/Modal";
 import { useState } from "react";
 import { useRole } from "@/lib/hooks/useRole";
 
-export default function AdminLoanRequestProfile({ id }: { id: string }) {
-  const [openApprove, setOpenApprove] = useState(false);
+export default function AdminLoanRequestReviewsExecutiveProfile({
+  id,
+}: {
+  id: string;
+}) {
+  const [openPreApprove, setOpenPreApprove] = useState(false);
+  const [openGenApprove, setOpenGenApprove] = useState(false);
   const queryClient = useQueryClient();
   const { hasRole } = useRole();
   const {
@@ -31,17 +40,21 @@ export default function AdminLoanRequestProfile({ id }: { id: string }) {
     isSuccess,
     error,
   } = useQuery({
-    queryKey: ["SinglePendingRequest", id],
+    queryKey: ["SingleReviewsRequest", id],
     queryFn: () => SingleRequest(id),
   });
 
   const acceptRequest = useMutation({
-    mutationFn: SecretaryApprove,
+    mutationFn: PresidentApprove,
     onSuccess: (data) => {
       toast.success("Approved Sucessfully");
-      setOpenApprove(false);
-      queryClient.invalidateQueries({ queryKey: ["SinglePendingRequest", id] });
-      queryClient.invalidateQueries({ queryKey: ["LoanRequestsPending"] });
+      setOpenGenApprove(false);
+      queryClient.invalidateQueries({
+        queryKey: ["SingleReviewsERequest", id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["LoanRequestsReviewsExcutives"],
+      });
     },
     onError: (error) => {
       toast.error("Failed to Approve application", {
@@ -49,8 +62,27 @@ export default function AdminLoanRequestProfile({ id }: { id: string }) {
       });
     },
   });
-  const handleConfirm = () => {
+
+  const genSecApprove = useMutation({
+    mutationFn: GenSecApprove,
+    onSuccess: (data) => {
+      toast.success("Approved Sucessfully");
+      setOpenGenApprove(false);
+      queryClient.invalidateQueries({ queryKey: ["SingleReviewsRequest", id] });
+      queryClient.invalidateQueries({ queryKey: ["LoanRequestsReviews"] });
+    },
+    onError: (error) => {
+      toast.error("Failed to Approve application", {
+        description: error.message,
+      });
+    },
+  });
+  const PresidenthandleConfirm = () => {
     acceptRequest.mutate(id);
+    // console.log("Clicking");
+  };
+  const GenhandleConfirm = () => {
+    genSecApprove.mutate(id);
     // console.log("Clicking");
   };
   return (
@@ -119,32 +151,59 @@ export default function AdminLoanRequestProfile({ id }: { id: string }) {
                     </div>
                   </Card>
                 </div>
-                {hasRole("gen_secretary", "admin", "secretary") &&
-                  Data.data.status === "pending" && (
+                {hasRole("admin", "president") &&
+                  Data.data.status === "reviewed" &&
+                  !Data.data.loan_approval.president_id && (
                     <div className="grid md:grid-cols-2 gap-6">
                       <Button
                         onClick={() => {
-                          setOpenApprove(true);
+                          setOpenPreApprove(true);
                         }}
                       >
-                        Approve this Request{" "}
+                        Approve this Request For President
                       </Button>
                       <Button variant={"destructive"}>
-                        Decline this Request
+                        Decline this Request For President
+                      </Button>
+                    </div>
+                  )}
+                {hasRole("admin", "gen_secretary") &&
+                  Data.data.status === "reviewed" &&
+                  !Data.data.loan_approval.secretary_id && (
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <Button
+                        onClick={() => {
+                          setOpenGenApprove(true);
+                        }}
+                      >
+                        Approve this Request For Gen_Sec
+                      </Button>
+                      <Button variant={"destructive"}>
+                        Decline this Request For Gen_Sec
                       </Button>
                     </div>
                   )}
               </div>
             </main>
             <ConfirmModal
-              title="Confirm Approval"
+              title="Confirm Approval For President"
               confirmVariant="success"
-              open={openApprove}
-              onClose={() => setOpenApprove(false)}
-              description={`Are you sure you want to approve ${Data.data.user.prefix} ${Data.data.user.surname}  ${Data.data.name} and put on review for Chairman?. This action cannot be undone.`}
+              open={openPreApprove}
+              onClose={() => setOpenPreApprove(false)}
+              description={`Are you sure you want to approve ${Data.data.user.prefix} ${Data.data.user.surname}  ${Data.data.name}?. This action cannot be undone.`}
               confirmLabel="Yes, Approve"
-              onConfirm={handleConfirm}
+              onConfirm={PresidenthandleConfirm}
               loading={acceptRequest.isPending}
+            />
+            <ConfirmModal
+              title="Confirm Approval For General Secretary"
+              confirmVariant="success"
+              open={openGenApprove}
+              onClose={() => setOpenGenApprove(false)}
+              description={`Are you sure you want to approve ${Data.data.user.prefix} ${Data.data.user.surname}  ${Data.data.name}?. This action cannot be undone.`}
+              confirmLabel="Yes, Approve"
+              onConfirm={GenhandleConfirm}
+              loading={genSecApprove.isPending}
             />
           </div>
         )
