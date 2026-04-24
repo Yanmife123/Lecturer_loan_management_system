@@ -48,9 +48,9 @@ export default function AdminLoanRequestReviewsExecutiveProfile({
     mutationFn: PresidentApprove,
     onSuccess: (data) => {
       toast.success("Approved Sucessfully");
-      setOpenGenApprove(false);
+      setOpenPreApprove(false);
       queryClient.invalidateQueries({
-        queryKey: ["SingleReviewsERequest", id],
+        queryKey: ["SingleReviewsRequest", id],
       });
       queryClient.invalidateQueries({
         queryKey: ["LoanRequestsReviewsExcutives"],
@@ -69,7 +69,9 @@ export default function AdminLoanRequestReviewsExecutiveProfile({
       toast.success("Approved Sucessfully");
       setOpenGenApprove(false);
       queryClient.invalidateQueries({ queryKey: ["SingleReviewsRequest", id] });
-      queryClient.invalidateQueries({ queryKey: ["LoanRequestsReviews"] });
+      queryClient.invalidateQueries({
+        queryKey: ["LoanRequestsReviewsExcutives"],
+      });
     },
     onError: (error) => {
       toast.error("Failed to Approve application", {
@@ -91,7 +93,7 @@ export default function AdminLoanRequestReviewsExecutiveProfile({
       {isSuccess ? (
         Data && (
           <div className="space-y-6">
-            <main className="flex gap-8  p-0 max-w-7xl mx-auto lg:flex-row flex-col max-lg:items-center">
+            <main className="grid gap-8  p-0 max-w-7xl mx-auto lg:grid-cols-2 grid-col-1 flex-col max-lg:items-center">
               {/* Sidebar */}
               <div className="space-y-8">
                 <ProfileSidebar data={Data.data} />

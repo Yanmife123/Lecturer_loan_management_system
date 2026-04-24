@@ -18,6 +18,7 @@ import {
   Step2FormData,
   Step3FormData,
 } from "./types";
+import { toast } from "sonner";
 
 // ─── Step title config ────────────────────────────────────────────────────────
 
@@ -49,6 +50,7 @@ export function RegisterForm() {
     },
     onError: (error) => {
       console.error(error);
+      toast.error("Registration Failed", { description: error.message });
     },
   });
 

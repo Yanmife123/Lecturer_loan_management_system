@@ -20,7 +20,7 @@ export default function LoansRequests() {
         ]}
       />
       <div className="flex justify-end items-center gap-3 flex-wrap">
-        <div className="grid md:grid-cols-2 grid-cols-1 gap-3 max-md:w-full">
+        <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3 max-md:w-full">
           <Button variant="outline">
             <Link href="/admin/dashboard/loans-requests/reviews">
               Loan Application Review
@@ -31,9 +31,11 @@ export default function LoansRequests() {
               Executive Loan Approval
             </Link>
           </Button>
-          {/* <Button variant="default">
-            <Link href="/admin/dashboard/members/all-members">All Members</Link>
-          </Button> */}
+          <Button variant="outline">
+            <Link href="/admin/dashboard/loans-requests/disbured">
+              Awaiting Disbursement
+            </Link>
+          </Button>
         </div>
       </div>
       <LoanRequestsTable />
