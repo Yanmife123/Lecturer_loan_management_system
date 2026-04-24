@@ -59,7 +59,7 @@ export default function AdminLoanRequestProfile({ id }: { id: string }) {
       {isSuccess ? (
         Data && (
           <div className="space-y-6">
-            <main className="flex gap-8  p-0 max-w-7xl mx-auto lg:flex-row flex-col max-lg:items-center">
+            <main className="grid gap-8  p-0 max-w-7xl mx-auto lg:grid-cols-2 grid-col-1 flex-col max-lg:items-center">
               {/* Sidebar */}
               <div className="space-y-8">
                 <ProfileSidebar data={Data.data} />
@@ -119,20 +119,21 @@ export default function AdminLoanRequestProfile({ id }: { id: string }) {
                     </div>
                   </Card>
                 </div>
-                {hasRole("gen_secretary", "admin", "secretary") && (
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <Button
-                      onClick={() => {
-                        setOpenApprove(true);
-                      }}
-                    >
-                      Approve this Request{" "}
-                    </Button>
-                    <Button variant={"destructive"}>
-                      Decline this Request
-                    </Button>
-                  </div>
-                )}
+                {hasRole("gen_secretary", "admin", "secretary") &&
+                  Data.data.status === "pending" && (
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <Button
+                        onClick={() => {
+                          setOpenApprove(true);
+                        }}
+                      >
+                        Approve this Request{" "}
+                      </Button>
+                      <Button variant={"destructive"}>
+                        Decline this Request
+                      </Button>
+                    </div>
+                  )}
               </div>
             </main>
             <ConfirmModal

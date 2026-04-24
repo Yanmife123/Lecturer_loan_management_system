@@ -14,6 +14,29 @@ export async function AllReviews(page = 1) {
   });
   return axiosResponseHandle(response);
 }
+export async function AllReviewsExcutive(page = 1) {
+  const response = await Instance1.get("/admin/loans/executives", {
+    params: { page },
+  });
+  return axiosResponseHandle(response);
+}
+export async function AllApprovedloan(page = 1) {
+  const response = await Instance1.get("/admin/loans/approved", {
+    params: { page },
+  });
+  return axiosResponseHandle(response);
+}
+export async function AllRecordsloan(page = 1) {
+  const response = await Instance1.get("/admin/loans/records", {
+    params: { page },
+  });
+  return axiosResponseHandle(response);
+}
+
+export async function DisburseLoan(id: string) {
+  const response = await Instance1.post(`/admin/loans/${id}/disburse`);
+  return axiosResponseHandle(response);
+}
 
 export async function SingleRequest(id: string) {
   const response = await Instance1.get(`/admin/loans/${id}`);

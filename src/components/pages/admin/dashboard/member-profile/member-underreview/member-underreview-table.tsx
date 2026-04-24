@@ -207,6 +207,7 @@ export function MemberUnderReviewTable() {
     mutationFn: PresidentApproveMemberReviews,
     onSuccess: (data) => {
       toast.success("President Approved", { description: data.message });
+      setOpenPresidentApprove(false);
       queryClient.invalidateQueries({ queryKey: ["memberUnderreview", page] });
     },
     onError: (error) => {
@@ -217,8 +218,9 @@ export function MemberUnderReviewTable() {
     mutationFn: GenSecApproveMemberReviews,
     onSuccess: (data) => {
       toast.success("General Secretary Approved", {
-        description: data.data.message,
+        description: data.message,
       });
+      setOpenGenSecApprove(false);
       queryClient.invalidateQueries({ queryKey: ["memberUnderreview", page] });
     },
     onError: (error) => {

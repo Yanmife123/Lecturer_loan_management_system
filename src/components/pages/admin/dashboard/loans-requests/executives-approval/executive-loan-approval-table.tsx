@@ -5,12 +5,17 @@ import {
   TableAction,
 } from "@/components/shared/table/dyanmic-table";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { AllRequest, AllReviews } from "@/lib/api/loan/adminLoans";
+import {
+  AllRequest,
+  AllReviews,
+  AllReviewsExcutive,
+} from "@/lib/api/loan/adminLoans";
 import { TableSkeleton } from "@/components/shared/skeleton/skeleton-table";
 import { useState } from "react";
 import { LaravelPaginationMeta } from "@/components/shared/table/laravel-pagination-type";
 
-import { LoanApplication } from "@/lib/type/admin/dashboard/loan-requests/pendingRequest";
+// import { LoanA } from "@/lib/type/admin/dashboard/loan-requests/pendingRequest";
+import { LoanApplication } from "@/lib/type/admin/dashboard/loan-requests/loan-review-executive";
 import { formatDate } from "@/components/utility/functions/data-fn";
 import { useRouter } from "next/navigation";
 import LoanStatusBadge from "@/components/shared/LoanStatus";
@@ -39,8 +44,25 @@ const getStatusDetails = (status: number | boolean | null | undefined) => {
     classes: "bg-amber-100 text-amber-700 border-amber-200",
   };
 };
+const getExecutiveStatus = (status: number | null | undefined) => {
+  // Check for Accepted (1 or true)
+  if (status) {
+    return {
+      label: "Approved",
+      classes: "bg-green-100 text-green-700 border-green-200",
+    };
+  }
 
-export function LoanReviewsTable() {
+  // Check for Declined (0 or false)
+  // We use !== null because 0 is falsy, but so is null. We want to distinguish them.
+  // Fallback for null or undefined
+  return {
+    label: "Pending",
+    classes: "bg-amber-100 text-amber-700 border-amber-200",
+  };
+};
+
+export function ExecutiveLoanTable() {
   const [page, setPage] = useState(1);
   const router = useRouter();
   const {
@@ -49,8 +71,8 @@ export function LoanReviewsTable() {
     error,
     isSuccess,
   } = useQuery({
-    queryKey: ["LoanRequestsReviews", page], // page in key = auto refetch on change
-    queryFn: () => AllReviews(page),
+    queryKey: ["LoanRequestsReviewsExcutives", page], // page in key = auto refetch on change
+    queryFn: () => AllReviewsExcutive(page),
     placeholderData: keepPreviousData,
   });
 
@@ -117,6 +139,40 @@ export function LoanReviewsTable() {
       },
     },
     {
+      key: "loan_approval",
+      label: "President Approval Status",
+      id: "President_Approval",
+      render(value, row) {
+        const statusDetails = getExecutiveStatus(
+          row.loan_approval.president_id,
+        );
+        return (
+          <span
+            className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusDetails.classes}`}
+          >
+            {statusDetails.label}
+          </span>
+        );
+      },
+    },
+    {
+      key: "loan_approval",
+      label: "General Secretary Approval Status",
+      id: "GenSec_Approval",
+      render(value, row) {
+        const statusDetails = getExecutiveStatus(
+          row.loan_approval.secretary_id,
+        );
+        return (
+          <span
+            className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusDetails.classes}`}
+          >
+            {statusDetails.label}
+          </span>
+        );
+      },
+    },
+    {
       key: "status",
       label: "Loan Status",
       render(value, row) {
@@ -129,7 +185,9 @@ export function LoanReviewsTable() {
       label: "View Details",
       onClick: (row) => {
         // Handle approve action
-        router.push(`/admin/dashboard/loans-requests/reviews/${row.id}`);
+        router.push(
+          `/admin/dashboard/loans-requests/executive-approval/${row.id}`,
+        );
       },
     },
   ];

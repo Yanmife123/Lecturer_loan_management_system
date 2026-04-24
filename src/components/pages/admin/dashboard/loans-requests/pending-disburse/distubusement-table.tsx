@@ -4,8 +4,13 @@ import {
   TableColumn,
   TableAction,
 } from "@/components/shared/table/dyanmic-table";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { AllRequest, AllReviews } from "@/lib/api/loan/adminLoans";
+import { useQuery, keepPreviousData, useMutation } from "@tanstack/react-query";
+import {
+  AllApprovedloan,
+  AllRequest,
+  AllReviews,
+  DisburseLoan,
+} from "@/lib/api/loan/adminLoans";
 import { TableSkeleton } from "@/components/shared/skeleton/skeleton-table";
 import { useState } from "react";
 import { LaravelPaginationMeta } from "@/components/shared/table/laravel-pagination-type";
@@ -14,6 +19,10 @@ import { LoanApplication } from "@/lib/type/admin/dashboard/loan-requests/pendin
 import { formatDate } from "@/components/utility/functions/data-fn";
 import { useRouter } from "next/navigation";
 import LoanStatusBadge from "@/components/shared/LoanStatus";
+import { ConfirmModal } from "@/components/shared/Modal";
+import { useUser } from "@/lib/hooks/useUser";
+import { useRole } from "@/lib/hooks/useRole";
+import { toast } from "sonner";
 
 const getStatusDetails = (status: number | boolean | null | undefined) => {
   // Check for Accepted (1 or true)
@@ -40,8 +49,13 @@ const getStatusDetails = (status: number | boolean | null | undefined) => {
   };
 };
 
-export function LoanReviewsTable() {
+export function LoanApprovalTable() {
   const [page, setPage] = useState(1);
+  const { hasRole } = useRole();
+  const [approveTarget, setApproveTarget] = useState<LoanApplication | null>(
+    null,
+  );
+  const [open, setOpen] = useState(false);
   const router = useRouter();
   const {
     data: Request,
@@ -49,10 +63,28 @@ export function LoanReviewsTable() {
     error,
     isSuccess,
   } = useQuery({
-    queryKey: ["LoanRequestsReviews", page], // page in key = auto refetch on change
-    queryFn: () => AllReviews(page),
+    queryKey: ["LoanRequestDisbureApproval", page], // page in key = auto refetch on change
+    queryFn: () => AllApprovedloan(page),
     placeholderData: keepPreviousData,
   });
+
+  const mutation = useMutation({
+    mutationFn: DisburseLoan,
+    onSuccess: (data) => {
+      toast.success("Loan disbursed successfully!");
+      setOpen(false);
+      setApproveTarget(null);
+    },
+    onError: (error) => {
+      toast.error("Loan disbursed Failed!", {
+        description: error.message,
+      });
+    },
+  });
+
+  const handleConfirm = () => {
+    mutation.mutate(approveTarget!.id.toString());
+  };
 
   const columns: TableColumn<LoanApplication>[] = [
     {
@@ -126,10 +158,11 @@ export function LoanReviewsTable() {
   ];
   const Actions: TableAction<LoanApplication>[] = [
     {
-      label: "View Details",
+      label: "Disburse",
+      show: (row) => row.status === "approved" && hasRole("treasurer", "admin"),
       onClick: (row) => {
-        // Handle approve action
-        router.push(`/admin/dashboard/loans-requests/reviews/${row.id}`);
+        setApproveTarget(row);
+        setOpen(true);
       },
     },
   ];
@@ -160,6 +193,21 @@ export function LoanReviewsTable() {
               pagination={meta ?? undefined}
               onPageChange={(p) => setPage(p)}
               emptyMessage="No loan requests found."
+            />
+            <ConfirmModal
+              open={open}
+              onClose={() => setOpen(false)}
+              onConfirm={handleConfirm}
+              title="Confirm Approval"
+              description={`Are you sure you want to disburse ${approveTarget?.user.prefix}  ${approveTarget?.user.surname} request for ₦${Number(
+                approveTarget?.amount,
+              ).toLocaleString("en-NG", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}  as a member? This action cannot be undone.`}
+              confirmLabel="Yes, Approve"
+              confirmVariant="success"
+              loading={mutation.isPending}
             />
           </div>
         )

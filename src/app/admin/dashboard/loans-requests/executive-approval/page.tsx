@@ -1,16 +1,12 @@
-import AdminLoanRequestProfile from "@/components/pages/admin/dashboard/loans-requests/singleLoanRequestPending/member-single/profile-page";
+import { ExecutiveLoanTable } from "@/components/pages/admin/dashboard/loans-requests/executives-approval/executive-loan-approval-table";
 import { PageHeader } from "@/components/shared/header/page-header2";
 
-export default async function SingleLoanRequestPending({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
+export default function LoanRequestReview() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Loan Pending Request Info"
+        title="Executive Loan Approval"
+        description="These are loan requests for the executive to approve or decline, apart from the chairman and secretary."
         breadcrumbs={[
           {
             label: "Dashboard",
@@ -21,11 +17,11 @@ export default async function SingleLoanRequestPending({
             href: "/admin/dashboard/loans-requests",
           },
           {
-            label: "Loan Pending Request Info",
+            label: "Exectives Loan Approval",
           },
         ]}
       />
-      <AdminLoanRequestProfile id={id} />
+      <ExecutiveLoanTable />
     </div>
   );
 }

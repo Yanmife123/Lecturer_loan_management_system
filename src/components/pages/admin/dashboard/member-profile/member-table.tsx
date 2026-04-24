@@ -11,6 +11,7 @@ import { useState } from "react";
 import { Member } from "@/lib/type/admin/dashboard/member-profile/member-underreview";
 import { LaravelPaginationMeta } from "@/components/shared/table/laravel-pagination-type";
 import { TableSkeleton } from "@/components/shared/skeleton/skeleton-table";
+import { formatDate } from "@/components/utility/functions/data-fn";
 // interface Member {
 //   id: number;
 //   MemberId: string;
@@ -98,7 +99,10 @@ export function MemberTable() {
       label: "Date Joined",
       key: "membership_detail",
       render(value, row) {
-        return `${row.membership_detail?.activated_at}`;
+        return formatDate(
+          row.membership_detail?.effective_date_of_membership,
+          "month-year",
+        );
       },
     },
     {
