@@ -14,3 +14,10 @@ export async function getallMyLoan(page = 1) {
   });
   return axiosResponseHandle(response);
 }
+
+export async function getLoanHistory(page = 1) {
+  const response = await Instance1.get("/loans/history", {
+    params: { page },
+  });
+  return axiosResponseHandle(response);
+}
