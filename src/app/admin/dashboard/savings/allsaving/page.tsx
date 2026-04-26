@@ -13,7 +13,7 @@ export default function AllSavingPage() {
           { label: "All Saving Records" },
         ]}
       />
-      <SavingTable />
+      <SavingTable showStats={false} />
     </div>
   );
 }
