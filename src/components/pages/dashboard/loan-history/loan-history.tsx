@@ -178,10 +178,15 @@ export default function LoanHistory() {
             </div>
             <div className="space-y-3">
               <div className="flex justify-end items-center gap-3 flex-wrap">
-                <div className="grid  grid-cols-1 gap-3 max-md:w-full">
+                <div className="grid  md:grid-cols-2 grid-cols-1 gap-3 max-md:w-full">
                   <Button variant="outline">
                     <Link href="/dashboard/loan-History/ongoing-request">
                       Ongoing Pending Loan Requests
+                    </Link>
+                  </Button>
+                  <Button variant="outline">
+                    <Link href="/dashboard/loan-History/repayments">
+                      Repayment Records
                     </Link>
                   </Button>
                 </div>

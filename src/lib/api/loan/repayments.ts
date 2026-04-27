@@ -27,3 +27,16 @@ export async function CreateRepaymentApi(data: LoanRepaymentRequest) {
   const response = await Instance1.post("/admin/loans/repayments/single", data);
   return response.data;
 }
+
+export async function AllRepaymentRecord(page = 1) {
+  const response = await Instance1.get("/admin/loans/repayments/", {
+    params: { page },
+  });
+  return axiosResponseHandle(response);
+}
+export async function AllRepaymentRecordMe(page = 1) {
+  const response = await Instance1.get("/loans/repayments/me", {
+    params: { page },
+  });
+  return axiosResponseHandle(response);
+}
