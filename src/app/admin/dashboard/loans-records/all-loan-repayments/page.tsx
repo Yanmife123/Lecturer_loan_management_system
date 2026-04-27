@@ -1,5 +1,7 @@
-import { LoanTable } from "@/components/pages/admin/dashboard/loans-records/all-loans";
+// import { LoanTable } from "@/components/pages/admin/dashboard/loans-records/all-loans";
 import { PageHeader } from "@/components/shared/header/page-header2";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 export default function AllLoanRepaymentPage() {
   return (
     <div className="space-y-6">
@@ -13,7 +15,15 @@ export default function AllLoanRepaymentPage() {
         ]}
       />
       <div className="space-y-3">
-        <LoanTable />
+        <div className="flex justify-end items-center gap-3 flex-wrap">
+          <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3 max-md:w-full">
+            <Button variant="outline">
+              <Link href="/admin/dashboard/loans-records/all-loan-repayments/search-member">
+                Create Repayment Records
+              </Link>
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );
