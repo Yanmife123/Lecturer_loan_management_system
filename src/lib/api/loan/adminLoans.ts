@@ -45,8 +45,23 @@ export async function SingleRequest(id: string) {
 
 // secretary apporve and decline api
 
+interface Decline {
+  id: string;
+  reason: string;
+}
+
 export async function SecretaryApprove(id: string) {
   const response = await Instance1.post(`/admin/loans/${id}/secretary-approve`);
+  return axiosResponseHandle(response);
+}
+
+export async function SecretaryDecline(data: Decline) {
+  const response = await Instance1.post(
+    `/admin/loans/${data.id}/secretary-decline`,
+    {
+      decline_reason: data.reason,
+    },
+  );
   return axiosResponseHandle(response);
 }
 
@@ -54,6 +69,15 @@ export async function SecretaryApprove(id: string) {
 
 export async function ChairmanApprove(id: string) {
   const response = await Instance1.post(`/admin/loans/${id}/chairman-approve`);
+  return axiosResponseHandle(response);
+}
+export async function ChairmanDecline(data: Decline) {
+  const response = await Instance1.post(
+    `/admin/loans/${data.id}/chairman-decline`,
+    {
+      decline_reason: data.reason,
+    },
+  );
   return axiosResponseHandle(response);
 }
 
@@ -64,11 +88,31 @@ export async function PresidentApprove(id: string) {
   return axiosResponseHandle(response);
 }
 
+export async function PresidentDecline(data: Decline) {
+  const response = await Instance1.post(
+    `/admin/loans/${data.id}/president-decline`,
+    {
+      decline_reason: data.reason,
+    },
+  );
+  return axiosResponseHandle(response);
+}
+
 // Gen_Sec apporve and decline api
 
 export async function GenSecApprove(id: string) {
   const response = await Instance1.post(
     `/admin/loans/${id}/genSecretary-approve`,
+  );
+  return axiosResponseHandle(response);
+}
+
+export async function GenSecDecline(data: Decline) {
+  const response = await Instance1.post(
+    `/admin/loans/${data.id}/genSecretary-decline`,
+    {
+      decline_reason: data.reason,
+    },
   );
   return axiosResponseHandle(response);
 }

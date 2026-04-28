@@ -15,15 +15,17 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import LoanInfo from "./loan-detals";
 // import { formatDate } from "@/components/utility/functions/data-fn";
 import { Button } from "@/components/ui/button";
-
+import { ChairmanDecline } from "@/lib/api/loan/adminLoans";
 import { toast } from "sonner";
 import { ConfirmModal } from "@/components/shared/Modal";
 import { useState } from "react";
 import { useRole } from "@/lib/hooks/useRole";
-import { Rowdies } from "next/font/google";
+import { ChairmanDeclineLoanModal } from "./declineRequest";
+import { ImageUrl } from "@/lib/getImageUrl";
 
 export default function AdminLoanRequestReviewsProfile({ id }: { id: string }) {
   const [openApprove, setOpenApprove] = useState(false);
+  const [openDecline, setOpenDecline] = useState(false);
   const queryClient = useQueryClient();
   const { hasRole } = useRole();
   const {
@@ -50,9 +52,26 @@ export default function AdminLoanRequestReviewsProfile({ id }: { id: string }) {
       });
     },
   });
+  const declineRequest = useMutation({
+    mutationFn: ChairmanDecline,
+    onSuccess: (data) => {
+      toast.success("Request Declined");
+      setOpenDecline(false);
+      queryClient.invalidateQueries({ queryKey: ["SingleReviewsRequest", id] });
+      queryClient.invalidateQueries({ queryKey: ["LoanRequestsReviews"] });
+    },
+    onError: (error) => {
+      toast.error("Failed to Decline application", {
+        description: error.message,
+      });
+    },
+  });
   const handleConfirm = () => {
     acceptRequest.mutate(id);
     // console.log("Clicking");
+  };
+  const handleDecline = async (reason: string) => {
+    await declineRequest.mutateAsync({ id, reason });
   };
   return (
     <div className="min-h-screen bg-transparent">
@@ -66,6 +85,16 @@ export default function AdminLoanRequestReviewsProfile({ id }: { id: string }) {
                 <ProfileSidebar data={Data.data} />
 
                 <LoanInfo data={Data.data} />
+                <Card className="p-4">
+                  <h2 className="text-lg leading-6 font-medium text-primaryT">
+                    Pay Slip
+                  </h2>
+                  <img
+                    src={ImageUrl() + Data.data.pay_slip}
+                    alt="Pay slip"
+                    className="w-full h-auto"
+                  />
+                </Card>
               </div>
 
               {/* Main Content */}
@@ -130,7 +159,10 @@ export default function AdminLoanRequestReviewsProfile({ id }: { id: string }) {
                       >
                         Approve this Request{" "}
                       </Button>
-                      <Button variant={"destructive"}>
+                      <Button
+                        variant={"destructive"}
+                        onClick={() => setOpenDecline(true)}
+                      >
                         Decline this Request
                       </Button>
                     </div>
@@ -142,10 +174,16 @@ export default function AdminLoanRequestReviewsProfile({ id }: { id: string }) {
               confirmVariant="success"
               open={openApprove}
               onClose={() => setOpenApprove(false)}
-              description={`Are you sure you want to approve ${Data.data.user.prefix} ${Data.data.user.surname}  ${Data.data.name} and put on review for Chairman?. This action cannot be undone.`}
+              description={`Are you sure you want to approve ${Data.data.user.prefix} ${Data.data.user.surname}  ${Data.data.name} as a Chairman?. This action cannot be undone.`}
               confirmLabel="Yes, Approve"
               onConfirm={handleConfirm}
               loading={acceptRequest.isPending}
+            />
+            <ChairmanDeclineLoanModal
+              open={openDecline}
+              onClose={() => setOpenDecline(false)}
+              memberName={`${Data.data.user.prefix} ${Data.data.user.surname}`}
+              onDecline={handleDecline}
             />
           </div>
         )

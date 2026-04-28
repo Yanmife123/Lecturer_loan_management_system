@@ -23,8 +23,11 @@ const LoanStatusBadge = ({ status }: LoanStatusBadgeProps) => {
       variant: "secondary",
       className: "bg-blue-100 text-blue-700",
     },
-    [LoanStatus.Declined]: { variant: "destructive", className: "" },
-    [LoanStatus.Rejected]: { variant: "destructive", className: "bg-red-700" },
+    [LoanStatus.Declined]: { variant: "destructive", className: "text-white" },
+    [LoanStatus.Rejected]: {
+      variant: "destructive",
+      className: "bg-red-700 text-white ",
+    },
     [LoanStatus.Cancelled]: { variant: "outline", className: "opacity-50" },
     [LoanStatus.Approved]: {
       variant: "default",
