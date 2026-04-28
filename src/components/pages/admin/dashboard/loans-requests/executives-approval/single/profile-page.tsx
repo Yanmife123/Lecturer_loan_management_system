@@ -11,7 +11,9 @@ import GuarantorInfo from "./guarantor-info";
 import ProfileInfoSkeleton from "@/components/shared/skeleton/profile/profile-info-skeleton";
 import {
   GenSecApprove,
+  GenSecDecline,
   PresidentApprove,
+  PresidentDecline,
   SingleRequest,
 } from "@/lib/api/loan/adminLoans";
 // import { LoanApplication } from "@/lib/type/admin/dashboard/loan-requests/pendingRequest";
@@ -24,6 +26,9 @@ import { toast } from "sonner";
 import { ConfirmModal } from "@/components/shared/Modal";
 import { useState } from "react";
 import { useRole } from "@/lib/hooks/useRole";
+import { DeclineLoanModal } from "./declineRequestPresident";
+import { ImageUrl } from "@/lib/getImageUrl";
+import Image from "next/image";
 
 export default function AdminLoanRequestReviewsExecutiveProfile({
   id,
@@ -32,6 +37,8 @@ export default function AdminLoanRequestReviewsExecutiveProfile({
 }) {
   const [openPreApprove, setOpenPreApprove] = useState(false);
   const [openGenApprove, setOpenGenApprove] = useState(false);
+  const [openPreDecline, setOpenPreDecline] = useState(false);
+  const [openGenDecline, setOpenGenDecline] = useState(false);
   const queryClient = useQueryClient();
   const { hasRole } = useRole();
   const {
@@ -62,6 +69,24 @@ export default function AdminLoanRequestReviewsExecutiveProfile({
       });
     },
   });
+  const DelcineRequest = useMutation({
+    mutationFn: PresidentDecline,
+    onSuccess: (data) => {
+      toast.success("Declined Sucessfully");
+      setOpenPreDecline(false);
+      queryClient.invalidateQueries({
+        queryKey: ["SingleReviewsRequest", id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["LoanRequestsReviewsExcutives"],
+      });
+    },
+    onError: (error) => {
+      toast.error("Failed to Decline application", {
+        description: error.message,
+      });
+    },
+  });
 
   const genSecApprove = useMutation({
     mutationFn: GenSecApprove,
@@ -79,13 +104,35 @@ export default function AdminLoanRequestReviewsExecutiveProfile({
       });
     },
   });
+  const genSecDecline = useMutation({
+    mutationFn: GenSecDecline,
+    onSuccess: (data) => {
+      toast.success("Declined Sucessfully");
+      setOpenGenDecline(false);
+      queryClient.invalidateQueries({ queryKey: ["SingleReviewsRequest", id] });
+      queryClient.invalidateQueries({
+        queryKey: ["LoanRequestsReviewsExcutives"],
+      });
+    },
+    onError: (error) => {
+      toast.error("Failed to Decline application", {
+        description: error.message,
+      });
+    },
+  });
   const PresidenthandleConfirm = () => {
     acceptRequest.mutate(id);
     // console.log("Clicking");
   };
+  const PresidenthanldeDecline = async (reason: string) => {
+    await DelcineRequest.mutateAsync({ id, reason });
+  };
   const GenhandleConfirm = () => {
     genSecApprove.mutate(id);
     // console.log("Clicking");
+  };
+  const GenhandleDecline = async (reason: string) => {
+    await genSecDecline.mutateAsync({ id, reason });
   };
   return (
     <div className="min-h-screen bg-transparent">
@@ -99,6 +146,16 @@ export default function AdminLoanRequestReviewsExecutiveProfile({
                 <ProfileSidebar data={Data.data} />
 
                 <LoanInfo data={Data.data} />
+                <Card className="p-4">
+                  <h2 className="text-lg leading-6 font-medium text-primaryT">
+                    Pay Slip
+                  </h2>
+                  <img
+                    src={ImageUrl() + Data.data.pay_slip}
+                    alt="Pay slip"
+                    className="w-full h-auto"
+                  />
+                </Card>
               </div>
 
               {/* Main Content */}
@@ -164,7 +221,12 @@ export default function AdminLoanRequestReviewsExecutiveProfile({
                       >
                         Approve this Request For President
                       </Button>
-                      <Button variant={"destructive"}>
+                      <Button
+                        variant={"destructive"}
+                        onClick={() => {
+                          setOpenPreDecline(true);
+                        }}
+                      >
                         Decline this Request For President
                       </Button>
                     </div>
@@ -180,7 +242,12 @@ export default function AdminLoanRequestReviewsExecutiveProfile({
                       >
                         Approve this Request For Gen_Sec
                       </Button>
-                      <Button variant={"destructive"}>
+                      <Button
+                        variant={"destructive"}
+                        onClick={() => {
+                          setOpenGenDecline(true);
+                        }}
+                      >
                         Decline this Request For Gen_Sec
                       </Button>
                     </div>
@@ -206,6 +273,18 @@ export default function AdminLoanRequestReviewsExecutiveProfile({
               confirmLabel="Yes, Approve"
               onConfirm={GenhandleConfirm}
               loading={genSecApprove.isPending}
+            />
+            <DeclineLoanModal
+              open={openPreDecline}
+              onClose={() => setOpenPreDecline(false)}
+              memberName={`${Data.data.user.prefix} ${Data.data.user.surname}`}
+              onDecline={PresidenthanldeDecline}
+            />
+            <DeclineLoanModal
+              open={openGenDecline}
+              onClose={() => setOpenGenDecline(false)}
+              memberName={`${Data.data.user.prefix} ${Data.data.user.surname}`}
+              onDecline={GenhandleDecline}
             />
           </div>
         )

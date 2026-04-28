@@ -9,7 +9,7 @@ import { TrendingUp, Wallet } from "lucide-react";
 // import Link from "next/link";
 import GuarantorInfo from "./guarantor-info";
 import ProfileInfoSkeleton from "@/components/shared/skeleton/profile/profile-info-skeleton";
-import { SingleRequest } from "@/lib/api/loan/adminLoans";
+import { SecretaryDecline, SingleRequest } from "@/lib/api/loan/adminLoans";
 // import { LoanApplication } from "@/lib/type/admin/dashboard/loan-requests/pendingRequest";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import LoanInfo from "./loan-detals";
@@ -20,9 +20,13 @@ import { toast } from "sonner";
 import { ConfirmModal } from "@/components/shared/Modal";
 import { useState } from "react";
 import { useRole } from "@/lib/hooks/useRole";
+import { DeclineLoanModal } from "./declineRequest";
+import Image from "next/image";
+import { ImageUrl } from "@/lib/getImageUrl";
 
 export default function AdminLoanRequestProfile({ id }: { id: string }) {
   const [openApprove, setOpenApprove] = useState(false);
+  const [openDecline, setOpenDecline] = useState(false);
   const queryClient = useQueryClient();
   const { hasRole } = useRole();
   const {
@@ -49,9 +53,27 @@ export default function AdminLoanRequestProfile({ id }: { id: string }) {
       });
     },
   });
+  const declineRequest = useMutation({
+    mutationFn: SecretaryDecline,
+    onSuccess: (data) => {
+      toast.success("Declined Sucessfully");
+      setOpenDecline(false);
+      queryClient.invalidateQueries({ queryKey: ["SinglePendingRequest", id] });
+      queryClient.invalidateQueries({ queryKey: ["LoanRequestsPending"] });
+    },
+    onError: (error) => {
+      toast.error("Failed to Decline application", {
+        description: error.message,
+      });
+    },
+  });
   const handleConfirm = () => {
     acceptRequest.mutate(id);
     // console.log("Clicking");
+  };
+
+  const handleDecline = async (reason: string) => {
+    await declineRequest.mutateAsync({ id, reason });
   };
   return (
     <div className="min-h-screen bg-transparent">
@@ -65,6 +87,16 @@ export default function AdminLoanRequestProfile({ id }: { id: string }) {
                 <ProfileSidebar data={Data.data} />
 
                 <LoanInfo data={Data.data} />
+                <Card className="p-4">
+                  <h2 className="text-lg leading-6 font-medium text-primaryT">
+                    Pay Slip
+                  </h2>
+                  <img
+                    src={ImageUrl() + Data.data.pay_slip}
+                    alt="Pay slip"
+                    className="w-full h-auto"
+                  />
+                </Card>
               </div>
 
               {/* Main Content */}
@@ -129,7 +161,10 @@ export default function AdminLoanRequestProfile({ id }: { id: string }) {
                       >
                         Approve this Request{" "}
                       </Button>
-                      <Button variant={"destructive"}>
+                      <Button
+                        variant={"destructive"}
+                        onClick={() => setOpenDecline(true)}
+                      >
                         Decline this Request
                       </Button>
                     </div>
@@ -145,6 +180,13 @@ export default function AdminLoanRequestProfile({ id }: { id: string }) {
               confirmLabel="Yes, Approve"
               onConfirm={handleConfirm}
               loading={acceptRequest.isPending}
+            />
+            <DeclineLoanModal
+              open={openDecline}
+              onClose={() => setOpenDecline(false)}
+              memberName={`${Data.data.user.prefix} ${Data.data.user.surname}`}
+              LoanId={id}
+              onDecline={handleDecline}
             />
           </div>
         )
