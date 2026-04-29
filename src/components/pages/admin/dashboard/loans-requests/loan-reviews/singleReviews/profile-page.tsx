@@ -90,9 +90,9 @@ export default function AdminLoanRequestReviewsProfile({ id }: { id: string }) {
                     Pay Slip
                   </h2>
                   <img
-                    src={ImageUrl() + Data.data.pay_slip}
+                    src={Data.data.pay_slip}
                     alt="Pay slip"
-                    className="w-full h-auto"
+                    className="w-full h-auto object-contain"
                   />
                 </Card>
               </div>
