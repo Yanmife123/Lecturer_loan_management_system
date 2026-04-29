@@ -12,6 +12,9 @@ import { Member } from "@/lib/type/admin/dashboard/member-profile/member-underre
 import { LaravelPaginationMeta } from "@/components/shared/table/laravel-pagination-type";
 import { TableSkeleton } from "@/components/shared/skeleton/skeleton-table";
 import { formatDate } from "@/components/utility/functions/data-fn";
+import { useRole } from "@/lib/hooks/useRole";
+import { ChangeRoleModal } from "./changeRole";
+
 // interface Member {
 //   id: number;
 //   MemberId: string;
@@ -49,9 +52,11 @@ import { formatDate } from "@/components/utility/functions/data-fn";
 // ];
 
 export function MemberTable() {
-  const router = useRouter();
+  // const router = useRouter();
+  const [seleteqdMemberId, setSelectedMemberId] = useState<string | null>(null);
+  const [setmemberName, setMemberName] = useState<string | null>(null);
   const [page, setPage] = useState(1);
-
+  const { hasRole } = useRole();
   const {
     data: ActiveMember,
     isLoading,
@@ -113,12 +118,17 @@ export function MemberTable() {
   ];
   const actions: TableAction<Member>[] = [
     {
-      label: "View Profile",
+      label: "Change Role",
       variant: "outline",
+      show: (member) => member.status === "active" && hasRole("admin"), // Show action only for active members
       onClick: (member: Member) => {
-        // Handle view profile action
-        // console.log("View profile for:", member);
-        // For example, navigate to the member's profile page
+        setSelectedMemberId(member.id.toString());
+        setMemberName(
+          `${member.prefix} ${member.surname} ${member.other_names}`,
+        );
+        // Handle change role action
+        // console.log("Change role for:", member);
+        // For example, navigate to the member's role change page
         // router.push(`/admin/dashboard/members/profile/${member.id}`);
       },
     },
@@ -141,6 +151,13 @@ export function MemberTable() {
       ) : (
         <div>{error?.message}</div>
       )}
+
+      <ChangeRoleModal
+        memberId={seleteqdMemberId!}
+        isOpen={seleteqdMemberId ? true : false}
+        onClose={() => setSelectedMemberId(null)}
+        memberName={setmemberName!}
+      />
     </div>
   );
 }
