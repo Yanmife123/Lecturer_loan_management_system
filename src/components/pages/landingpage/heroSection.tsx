@@ -31,7 +31,7 @@ export function HeroSection() {
               //   size={"lg"}
               asChild
             >
-              <Link href={""}> Apply for a Loan</Link>
+              <Link href={"/register"}> Apply for a Loan</Link>
             </Button>
             <Button
               variant={"secondary"}
