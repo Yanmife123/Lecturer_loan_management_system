@@ -15,7 +15,7 @@ export function HeroSection() {
           className="object-cover object-center -z-1"
         />
       </div>
-      <div className="flex justify-center items-center space-y-4 h-full">
+      <div className="flex justify-center items-center space-y-4 h-full z-2">
         <div className="space-y-4">
           <h1 className="font-sans lg:leading-15 leading-9 font-medium lg:text-6xl text-3xl text-white text-center">
             Empowering Staff Through Cooperative Finance
